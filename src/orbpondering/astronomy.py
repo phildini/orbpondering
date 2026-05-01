@@ -9,15 +9,14 @@ from astropy.coordinates import EarthLocation, get_body, get_sun, solar_system_e
 from astropy.time import Time
 import numpy as np
 
+from orbpondering.utils import _normalize, zodiac_sign_for_degree
+
+
 solar_system_ephemeris.set("jpl")
 
 
 def _noon_utc(d: date) -> Time:
     return Time(datetime(d.year, d.month, d.day, 12, 0, 0), scale="utc")
-
-
-def _normalize(deg: float) -> float:
-    return float(deg % 360.0)
 
 
 def sun_longitude(d: date) -> float:
@@ -90,15 +89,3 @@ def midheaven(d: date, lat: float, lon: float) -> float:
     x = -np.sin(lst_rad) * np.tan(np.deg2rad(epsilon))
     mc_val = np.rad2deg(np.arctan2(y, x))
     return _normalize(mc_val)
-
-
-def zodiac_sign_for_degree(deg: float) -> ZodiacSign:
-    """Map ecliptic longitude to zodiac sign."""
-    from orbpondering.constants import ZodiacSign
-    
-    normalized = deg % 360.0
-    for sign in ZodiacSign:
-        if sign.start_deg <= normalized < sign.end_deg:
-            return sign
-    # Should not happen, but fallback
-    return ZodiacSign.PISCES

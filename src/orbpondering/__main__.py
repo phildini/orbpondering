@@ -6,15 +6,25 @@ import argparse
 import datetime
 import sys
 
-from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
-
 from orbpondering.constants import HouseSystem
+from orbpondering.display import display_reading
 from orbpondering.draw import tarot_draw_for_date
-from orbpondering.display import display_spread
+from orbpondering.spreads import SPREADS
+
+
+def _try_import_rich():
+    try:
+        from rich.console import Console
+        from rich.progress import Progress, SpinnerColumn, TextColumn
+
+        return Console, Progress, SpinnerColumn, TextColumn
+    except ImportError:
+        return None, None, None, None
 
 
 def main(argv: list[str] | None = None) -> int:
+    Console, Progress, SpinnerColumn, TextColumn = _try_import_rich()
+    
     parser = argparse.ArgumentParser(
         description="Daily tarot draw seeded by astrological chart"
     )
@@ -37,30 +47,47 @@ def main(argv: list[str] | None = None) -> int:
         "--spread",
         type=str,
         default="daily",
-        help="Spread name (daily, three_card, celtic_cross)",
+        choices=list(SPREADS),
+        help="Spread name",
     )
     parser.add_argument(
-        "--education", "-e",
+        "--education",
+        "-e",
         action="store_true",
         help="Educational mode: walk through calculations step by step",
     )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Verbose educational output",
+    )
     args = parser.parse_args(argv)
 
-    dt = datetime.date.fromisoformat(args.date)
+    try:
+        dt = datetime.date.fromisoformat(args.date)
+    except ValueError as exc:
+        print(f"Error: Invalid date format '{args.date}'. Use YYYY-MM-DD.", file=sys.stderr)
+        return 1
+
     house = HouseSystem(args.house)
 
-    if args.education:
-        # Run in educational mode
+    if Console and args.education:
         from orbpondering.education.engine import run_education
+
         console = Console()
         console.print("[bold blue]✦ ORBPONDERING EDUCATION MODE ✦[/]\n")
         result = run_education(
-            dt, args.lat, args.lon, house, args.spread, console
+            d=dt,
+            lat=args.lat,
+            lon=args.lon,
+            house_system=house,
+            spread_name=args.spread,
+            console=console,
+            verbose=args.verbose,
         )
-        # Display final result
-        display_spread(result)
-    else:
-        # Standard mode with progress bar
+        display_reading(result)
+    elif Progress:
         console = Console()
         with Progress(
             SpinnerColumn(),
@@ -70,20 +97,32 @@ def main(argv: list[str] | None = None) -> int:
             task2 = progress.add_task("[green]Computing house cusps...", total=100)
             task3 = progress.add_task("[blue]Determining chart data...", total=100)
             task4 = progress.add_task("[magenta]Drawing tarot cards...", total=100)
-            
-            # Actually perform the computation
-            draw = tarot_draw_for_date(
-                dt, lat=args.lat, lon=args.lon, house_system=house, spread_name=args.spread
+
+            reading = tarot_draw_for_date(
+                d=dt,
+                lat=args.lat,
+                lon=args.lon,
+                house_system=house,
+                spread_name=args.spread,
             )
-            
-            # Complete all tasks
+
             progress.update(task1, completed=100)
             progress.update(task2, completed=100)
             progress.update(task3, completed=100)
             progress.update(task4, completed=100)
-        
-        # Display final result
-        display_spread(draw)
+
+        display_reading(reading)
+    else:
+        print("Rich is not installed. Install with: pip install rich", file=sys.stderr)
+        reading = tarot_draw_for_date(
+            d=dt,
+            lat=args.lat,
+            lon=args.lon,
+            house_system=house,
+            spread_name=args.spread,
+        )
+        for pos in reading.positions:
+            print(f"{pos.position_label}: {pos.card.name}")
 
     return 0
 

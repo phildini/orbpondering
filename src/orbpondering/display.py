@@ -2,73 +2,70 @@
 
 from __future__ import annotations
 
-from rich.console import Console
-from rich.table import Table
+from typing import TYPE_CHECKING
 
-from orbpondering.constants import HouseSystem, Suit
+from orbpondering.constants import Arcana, HouseSystem, Suit
+
+if TYPE_CHECKING:
+    from orbpondering.models import TarotReading
 
 
 def _get_suit_symbol(suit: Suit | None) -> str:
-    """Get Unicode symbol for suit."""
     if not suit:
         return ""
     return suit.symbol
 
 
 def _get_house_symbol(house_system: HouseSystem) -> str:
-    """Get symbol representing house system."""
     symbols = {
-        HouseSystem.WHOLE_SIGN: "⬭",
-        HouseSystem.EQUAL: "⬮",
-        HouseSystem.PORPHYRY: "⬯",
-        HouseSystem.PLACIDUS: "⬰",
+        HouseSystem.WHOLE_SIGN: "\u2B6D",
+        HouseSystem.EQUAL: "\u2B6E",
+        HouseSystem.PORPHYRY: "\u2B6F",
+        HouseSystem.PLACIDUS: "\u2B70",
     }
-    return symbols.get(house_system, "⬭")
+    return symbols.get(house_system, "\u2B6D")
 
 
-def _get_card_orientation_indicator(card) -> str:
-    """Get orientation indicator for card."""
-    # Using simple Unicode arrows for orientation
-    return "↑" if getattr(card, 'upright', True) else "↓"
+def display_reading(reading: TarotReading) -> None:
+    try:
+        from rich.console import Console
+        from rich.table import Table
+    except ImportError:
+        raise ImportError(
+            "Rich is required for display. Install with: pip install rich"
+        ) from None
 
-
-def display_spread(draw_result) -> None:
-    """Display a tarot spread in a rich, formatted console output."""
     console = Console()
-    
-    # Basic info section with symbols
-    house_symbol = _get_house_symbol(draw_result['house_system'])
-    console.print(f"[bold blue]Tarot Spread for {draw_result['date']}[/]", style="bold")
-    console.print(f"[cyan]House System:[/] {house_symbol} {draw_result['house_system'].value}")
-    console.print(f"[cyan]Spread:[/] {draw_result['spread'].name}")
-    console.print(f"[cyan]Seed:[/] {draw_result['seed']:016x}")
+    house_symbol = _get_house_symbol(reading.house_system)
+
+    console.print(
+        f"[bold blue]{reading.spread.name} for {reading.date}[/]",
+        style="bold",
+    )
+    console.print(f"[cyan]House System:[/] {house_symbol} {reading.house_system.value}")
+    console.print(f"[cyan]Seed:[/] {reading.seed:016x}")
     console.print()
-    
-    # Display positions and cards in a table
+
     table = Table(box=None, show_header=False, padding=(0, 1))
     table.add_column("Position", style="bold magenta", no_wrap=True)
     table.add_column("Card", style="bold white")
     table.add_column("Keywords", style="bright_green")
-    
-    for i, pos in enumerate(draw_result["positions"]):
-        position_label = f"[bold]{pos['position_label']}[/]"
-        card = pos["card"]
-        
-        # Build the card name with suit symbol and orientation
-        if card.arcana == "major":
+
+    for pos in reading.positions:
+        position_label = f"[bold]{pos.position_label}[/]"
+        card = pos.card
+
+        if card.arcana == Arcana.MAJOR:
             card_name = card.name
         else:
             suit_symbol = _get_suit_symbol(card.suit)
             card_name = f"{suit_symbol} {card.name}"
-        
-        # Add orientation indicator
-        orientation = _get_card_orientation_indicator(card)
+
+        orientation = "\u2191" if card.upright else "\u2193"
         card_name += f" {orientation}"
-        
-        # Format keywords
+
         keywords = ", ".join(card.keywords) if card.keywords else "No keywords"
-        
         table.add_row(position_label, card_name, keywords)
-    
+
     console.print(table)
     console.print()
