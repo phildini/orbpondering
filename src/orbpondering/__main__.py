@@ -7,6 +7,7 @@ import datetime
 import sys
 
 from rich.console import Console
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from orbpondering.constants import HouseSystem
 from orbpondering.draw import tarot_draw_for_date
@@ -59,10 +60,29 @@ def main(argv: list[str] | None = None) -> int:
         # Display final result
         display_spread(result)
     else:
-        # Standard mode
-        draw = tarot_draw_for_date(
-            dt, lat=args.lat, lon=args.lon, house_system=house, spread_name=args.spread
-        )
+        # Standard mode with progress bar
+        console = Console()
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+        ) as progress:
+            task1 = progress.add_task("[cyan]Calculating planetary positions...", total=100)
+            task2 = progress.add_task("[green]Computing house cusps...", total=100)
+            task3 = progress.add_task("[blue]Determining chart data...", total=100)
+            task4 = progress.add_task("[magenta]Drawing tarot cards...", total=100)
+            
+            # Actually perform the computation
+            draw = tarot_draw_for_date(
+                dt, lat=args.lat, lon=args.lon, house_system=house, spread_name=args.spread
+            )
+            
+            # Complete all tasks
+            progress.update(task1, completed=100)
+            progress.update(task2, completed=100)
+            progress.update(task3, completed=100)
+            progress.update(task4, completed=100)
+        
+        # Display final result
         display_spread(draw)
 
     return 0
