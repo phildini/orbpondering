@@ -1,3 +1,1 @@
-# Orbpondering
-
-Tarot spreads seeded by daily astrological calculations.
+"""Orbpondering - Educational Mode"""

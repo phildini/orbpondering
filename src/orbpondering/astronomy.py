@@ -5,9 +5,11 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from astropy import units as u
-from astropy.coordinates import EarthLocation, get_body, get_sun
+from astropy.coordinates import EarthLocation, get_body, get_sun, solar_system_ephemeris
 from astropy.time import Time
 import numpy as np
+
+solar_system_ephemeris.set("jpl")
 
 
 def _noon_utc(d: date) -> Time:
@@ -88,3 +90,15 @@ def midheaven(d: date, lat: float, lon: float) -> float:
     x = -np.sin(lst_rad) * np.tan(np.deg2rad(epsilon))
     mc_val = np.rad2deg(np.arctan2(y, x))
     return _normalize(mc_val)
+
+
+def zodiac_sign_for_degree(deg: float) -> ZodiacSign:
+    """Map ecliptic longitude to zodiac sign."""
+    from orbpondering.constants import ZodiacSign
+    
+    normalized = deg % 360.0
+    for sign in ZodiacSign:
+        if sign.start_deg <= normalized < sign.end_deg:
+            return sign
+    # Should not happen, but fallback
+    return ZodiacSign.PISCES
