@@ -9,17 +9,17 @@ from rich.console import Console
 
 from orbpondering.constants import HouseSystem
 from orbpondering.education.steps import (
-    step_planetary_positions,
-    step_sidereal_time,
+    step_card_draw,
     step_house_cusps,
+    step_planetary_positions,
     step_planets_in_houses,
     step_seed_generation,
-    step_card_draw,
+    step_sidereal_time,
 )
 
 
 def run_education(
-    date: date,
+    d: date,
     lat: float,
     lon: float,
     house_system: HouseSystem,
@@ -27,17 +27,14 @@ def run_education(
     console: Console,
     verbose: bool = False,
 ) -> dict:
-    """Run all education steps sequentially and return final draw result."""
-    # Initialize context
-    ctx = {
-        "date": date,
+    ctx: dict = {
+        "date": d,
         "lat": lat,
         "lon": lon,
         "house_system": house_system,
         "spread_name": spread_name,
     }
-    
-    # Run each step in sequence
+
     steps = [
         step_planetary_positions,
         step_sidereal_time,
@@ -46,8 +43,8 @@ def run_education(
         step_seed_generation,
         step_card_draw,
     ]
-    
+
     for step in steps:
         step(console, ctx, verbose)
-    
+
     return ctx.get("card_draw", {})

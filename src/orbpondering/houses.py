@@ -6,23 +6,23 @@ from datetime import date
 
 from orbpondering.astronomy import ascendant, midheaven
 from orbpondering.constants import HouseSystem
-
-
-def _normalize(deg: float) -> float:
-    return float(deg % 360.0)
+from orbpondering.utils import _normalize
 
 
 def whole_sign_cusps(asc_deg: float) -> list[float]:
+    """Calculate whole sign house cusps."""
     sign_index = int(asc_deg // 30)
     first_cusp = sign_index * 30.0
     return [_normalize(first_cusp + i * 30.0) for i in range(12)]
 
 
 def equal_cusps(asc_deg: float) -> list[float]:
+    """Calculate equal house cusps."""
     return [_normalize(asc_deg + i * 30.0) for i in range(12)]
 
 
 def porphyry_cusps(asc_deg: float, mc_deg: float) -> list[float]:
+    """Calculate Porphyry house cusps."""
     ic_deg = (mc_deg + 180.0) % 360.0
     desc_deg = (asc_deg + 180.0) % 360.0
 
@@ -43,19 +43,20 @@ def porphyry_cusps(asc_deg: float, mc_deg: float) -> list[float]:
 
 
 def _placidus_cusps(asc_deg: float, mc_deg: float) -> list[float]:
+    """Placidus house cusps (simplified)."""
     # Simplified Placidus implementation for v1
-    # Actual Placidus involves iterative calculation of time-based cusps
-    # For now, we'll use Porphyry-based logic as a reasonable approximation
+    # True Placidus requires iterative time-based semi-arc calculations
     return porphyry_cusps(asc_deg, mc_deg)
 
 
 def house_cusps(
     d: date, lat: float, lon: float, house_system: HouseSystem
 ) -> list[float]:
+    """Calculate house cusps for a given date, location, and house system."""
     asc = ascendant(d, lat, lon)
     mc = midheaven(d, lat, lon)
 
-    handlers: dict[HouseSystem, callable] = {
+    handlers = {
         HouseSystem.WHOLE_SIGN: lambda a, m: whole_sign_cusps(a),
         HouseSystem.EQUAL: lambda a, m: equal_cusps(a),
         HouseSystem.PORPHYRY: porphyry_cusps,

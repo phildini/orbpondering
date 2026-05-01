@@ -8,10 +8,12 @@ dependencies = [
     "astropy>=6.0",
     "jplephem>=2.14",
     "numpy>=1.26",
-    "rich>=13.0",
 ]
 
 [project.optional-dependencies]
+cli = [
+    "rich>=13.0",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.4",
