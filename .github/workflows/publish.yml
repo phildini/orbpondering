@@ -1,16 +1,19 @@
-name: Publish to PyPI
+name: Publish Package
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g., 0.2.0). Leave blank for auto-detect.'
+        description: 'Version to publish (e.g., 0.2.0). Leave blank to auto-detect from git tag.'
         required: false
         default: ''
+
 permissions:
   contents: read
   id-token: write
+
 jobs:
   build:
     environment: publish
@@ -20,27 +23,44 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up uv + Python
-        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          enable-cache: true
-      - name: Get Version
-        id: version
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            **/pyproject.toml
+            **/uv.lock
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install hatch
+
+      - name: Get version
+        id: get_version
         run: |
           if [[ "${{ github.event.inputs.version }}" != "" ]]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            # Auto-detect from git tag
-            TAG=$(git describe --tags --exact-match 2>/dev/null || echo "v0.1.0")
-            echo "version=$TAG" >> $GITHUB_OUTPUT
+            # Extract version from git tag
+            TAG_NAME="${GITHUB_REF##*/}"
+            if [[ "$TAG_NAME" == v* ]]; then
+              echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
+            else
+              echo "version=v0.1.0" >> $GITHUB_OUTPUT
+            fi
           fi
-      - name: Set up Hatch
+
+      - name: Set version in package
         run: |
-          python -m pip install --upgrade hatch
+          hatch version ${{ steps.get_version.outputs.version }}
+
       - name: Build package
         run: |
-          hatch version ${{ steps.version.outputs.version }}
           hatch build
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
