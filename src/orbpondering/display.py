@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from orbpondering.constants import Arcana, HouseSystem, Suit
+from orbpondering.utils import zodiac_sign_for_degree
 
 if TYPE_CHECKING:
     from orbpondering.models import TarotReading
@@ -37,6 +38,25 @@ def display_reading(reading: TarotReading) -> None:
 
     console = Console()
     house_symbol = _get_house_symbol(reading.house_system)
+
+    # Display natal chart summary if present
+    if reading.natal_chart:
+        natal = reading.natal_chart
+        birth_data = natal.birth_data
+        console.print(
+            f"[bold blue]Natal Chart for {birth_data.date}[/]",
+            style="bold",
+        )
+        # Show a few key positions
+        key_planets = ["sun", "moon", "mercury", "venus", "mars"]
+        natal_pos = natal.planetary_positions
+        natal_parts = []
+        for p in key_planets:
+            if p in natal_pos:
+                sign = zodiac_sign_for_degree(natal_pos[p])
+                natal_parts.append(f"{p[0].upper()} {sign.symbol} {sign.full_name[:3]}")
+        console.print(f"  [cyan]Planets: [/][white]{', '.join(natal_parts)}[/]")
+        console.print()
 
     console.print(
         f"[bold blue]{reading.spread.name} for {reading.date}[/]",

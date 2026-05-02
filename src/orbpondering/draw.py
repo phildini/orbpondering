@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import random
-from datetime import date
+from datetime import date, datetime
 
+from orbpondering.aspects import find_aspects
 from orbpondering.cards import DECK, Card
-from orbpondering.constants import Arcana, HouseSystem
+from orbpondering.constants import Arcana
 from orbpondering.models import Chart, CardPosition, TarotReading
 from orbpondering.seed import chart_seed
 from orbpondering.spreads import Spread, get_spread
+from orbpondering.utils import zodiac_sign_for_degree
 
 
 def _shuffle_and_deal(
@@ -38,10 +40,11 @@ def _infer_house_index(
 
 
 def compute_chart(
-    d: date,
+    d: date | datetime,
     lat: float,
     lon: float,
-    house_system: HouseSystem,
+    house_system,
+    tz: str | None = None,
 ) -> Chart:
     from orbpondering.astronomy import (
         ascendant,
@@ -49,13 +52,13 @@ def compute_chart(
         planetary_positions,
         sidereal_time,
     )
+    from orbpondering.constants import HouseSystem
     from orbpondering.houses import house_cusps
-    from orbpondering.utils import zodiac_sign_for_degree
 
-    positions = planetary_positions(d)
-    asc = ascendant(d, lat, lon)
-    mc = midheaven(d, lat, lon)
-    sidereal_time(d, lon)
+    positions = planetary_positions(d, tz)
+    asc = ascendant(d, lat, lon, tz)
+    mc = midheaven(d, lat, lon, tz)
+    sidereal_time(d, lon, tz)
     cusps = house_cusps(d, lat, lon, house_system)
 
     planetary_posns = {
@@ -73,7 +76,7 @@ def compute_chart(
         elements[sign.element] += 1
     dominant = max(elements, key=elements.get)
 
-    seed = chart_seed(d, lat, lon, house_system)
+    seed = chart_seed(d, lat, lon, house_system, tz=tz)
     return Chart(
         date=d,
         latitude=lat,
@@ -88,17 +91,29 @@ def compute_chart(
     )
 
 
+def compute_natal_chart(birth_data) -> NatalChart:
+    from orbpondering.astronomy import planetary_positions
+    from orbpondering.models import NatalChart
+    
+    positions = planetary_positions(birth_data.date, birth_data.tz)
+    return NatalChart(
+        birth_data=birth_data,
+        planetary_positions=positions,
+    )
+
+
 def daily_tarot_draw(
-    d: date,
+    d: date | datetime,
     lat: float,
     lon: float,
-    house_system: HouseSystem,
+    house_system,
     spread: Spread,
+    tz: str | None = None,
 ) -> TarotReading:
-    seed = chart_seed(d, lat, lon, house_system)
+    seed = chart_seed(d, lat, lon, house_system, tz=tz)
     positions = _shuffle_and_deal(seed, spread)
 
-    chart = compute_chart(d, lat, lon, house_system)
+    chart = compute_chart(d, lat, lon, house_system, tz)
 
     card_positions = []
     for label, card in positions:
@@ -118,6 +133,45 @@ def daily_tarot_draw(
         seed=seed,
         positions=card_positions,
         chart=chart,
+    )
+
+
+def birth_tarot_draw(
+    d: date | datetime,
+    lat: float,
+    lon: float,
+    birth_data,
+    house_system,
+    spread_name: str,
+) -> TarotReading:
+    """Draw a tarot spread using the user's natal chart + current transits."""
+    from orbpondering.models import NatalChart
+    from orbpondering.spreads import get_spread
+    
+    spread = get_spread(spread_name)
+    transit_chart = compute_chart(d, lat, lon, house_system, birth_data.tz)
+    natal_chart = compute_natal_chart(birth_data)
+    aspects = find_aspects(natal_chart, transit_chart)
+    seed = chart_seed(
+        d, lat, lon, house_system, natal_chart, aspects, birth_data.tz
+    )
+    positions = _shuffle_and_deal(seed, spread)
+
+    # TODO: Use aspects for house assignment in card positions if desired
+    card_positions = [
+        CardPosition(position_label=label, card=card)
+        for label, card in positions
+    ]
+
+    return TarotReading(
+        date=d,
+        house_system=house_system,
+        spread=spread,
+        seed=seed,
+        positions=card_positions,
+        chart=transit_chart,
+        natal_chart=natal_chart,
+        aspects=aspects,
     )
 
 
@@ -147,8 +201,14 @@ def tarot_draw_for_date(
     d: date,
     lat: float = 0.0,
     lon: float = 0.0,
-    house_system: HouseSystem = HouseSystem.WHOLE_SIGN,
+    house_system=None,
     spread_name: str = "daily",
 ) -> TarotReading:
+    from orbpondering.constants import HouseSystem
+    from orbpondering.spreads import get_spread
+    
+    if house_system is None:
+        house_system = HouseSystem.WHOLE_SIGN
+    
     spread = get_spread(spread_name)
     return daily_tarot_draw(d, lat, lon, house_system, spread)

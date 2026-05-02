@@ -66,3 +66,13 @@ class Suit(Enum):
         self.full_name = full_name
         self.element = element
         self.symbol = symbol
+
+
+class AspectType(Enum):
+    """Classical astrological aspects."""
+
+    CONJUNCTION = (0, 8)
+    SEXTILE = (60, 6)
+    SQUARE = (90, 8)
+    TRINE = (120, 8)
+    OPPOSITION = (180, 8)
