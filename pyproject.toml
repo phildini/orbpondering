@@ -1,15 +1,15 @@
 [project]
 name = "orbpondering"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Tarot spreads seeded by daily astrological calculations"
 readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "MIT"}
 authors = [
-    {name = "Philip James", email = "phildini@phildini.net"},
+    {name = "Phil Dini", email = "phil.dini@gmail.com"},
 ]
 maintainers = [
-    {name = "Philip James", email = "phildini@phildini.net"},
+    {name = "Phil Dini", email = "phil.dini@gmail.com"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -48,8 +48,11 @@ Repository = "https://github.com/phildini/orbpondering"
 Issues = "https://github.com/phildini/orbpondering/issues"
 Changelog = "https://github.com/phildini/orbpondering/blob/main/CHANGELOG.md"
 
+[tool.hatch.version]
+path = "src/orbpondering/__init__.py"
+
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
