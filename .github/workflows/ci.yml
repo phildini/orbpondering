@@ -31,6 +31,7 @@ jobs:
     - name: Install uv
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
+        export PATH="$HOME/.cargo/bin:$PATH"
 
     - name: Install dependencies
       run: |
@@ -39,6 +40,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
+        source ~/.cargo/env
         uv run pytest --cov=orbpondering --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage to Codecov
