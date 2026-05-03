@@ -1,4 +1,9 @@
-# Orbpondering
+<p align="center">
+<img src="design/orbpondering.png" width="300">
+</p>
+
+
+# Orbpondering [![Version][version-badge]][version-link]
 
 **Orbpondering** generates daily tarot readings based on astrological calculations. It uses your location and the current date to compute planetary positions and generate a deterministic tarot spread.
 
@@ -126,3 +131,6 @@ uv run mypy src/      # Type check
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[version-badge]:   https://img.shields.io/pypi/v/orbpondering.svg?label=version
+[version-link]:    https://pypi.python.org/pypi/orbpondering/
