@@ -72,8 +72,8 @@ class TestFindAspects:
             "moon": 100.0,
         }
         transit_positions = {
-            "sun": 30.0,  # too far from natal sun
-            "moon": 105.0,  # too far from natal moon
+            "sun": 30.0,
+            "moon": 200.0,
         }
         natal = NatalChart(
             birth_data=BirthData(date="2025-01-01", time=None, lat=0.0, lon=0.0, tz=None),
@@ -83,7 +83,7 @@ class TestFindAspects:
             "planetary_positions": transit_positions,
         })()
         result = find_aspects(natal, transit)
-        # All separations (30.0, 5.0, 105.0) are > max orb for any aspect
+        # All separations (30°, 160°, 70°, 100°) are outside aspect orbs
         assert result == ()
 
     def test_one_aspect(self) -> None:
@@ -110,14 +110,17 @@ class TestFindAspects:
         # moon-sun: 100° difference, square (90°)
         assert len(result) == 3
         # Check that they are ordered by orb (tightest first)
-        assert result[0].natal_body == "sun"
-        assert result[0].transit_body == "sun"
+        # moon-moon: 0° difference, conjunction (orb = 0.0) - should come first
+        assert result[0].natal_body == "moon"
+        assert result[0].transit_body == "moon"
         assert result[0].aspect_type == AspectType.CONJUNCTION
-        assert result[0].orb == 2.0
-        assert result[1].natal_body == "moon"
-        assert result[1].transit_body == "moon"
+        assert result[0].orb == 0.0
+        # sun-sun: 2° difference, conjunction (orb = 2.0) - should come second
+        assert result[1].natal_body == "sun"
+        assert result[1].transit_body == "sun"
         assert result[1].aspect_type == AspectType.CONJUNCTION
-        assert result[1].orb == 0.0
+        assert result[1].orb == 2.0
+        # moon-sun: 98° difference, square (orb = 8.0) - should come third
         assert result[2].natal_body == "moon"
         assert result[2].transit_body == "sun"
         assert result[2].aspect_type == AspectType.SQUARE
@@ -145,19 +148,17 @@ class TestFindAspects:
         result = find_aspects(natal, transit)
         # Should detect 9 aspects total from combinations
         assert len(result) == 9
-        # Check a few specific ones
-        # First one should be the tightest (sun-sun conjunction at 5°)
+        # Check a few specific ones (sorted by orb, stable sort preserves insertion order)
+        # All have orb=5.0, ordered by insertion: sun first (first key in dict)
         assert result[0].natal_body == "sun"
         assert result[0].transit_body == "sun"
         assert result[0].aspect_type == AspectType.CONJUNCTION
         assert result[0].orb == 5.0
-        # Second should be moon-moon (5° separation)
-        assert result[1].natal_body == "moon"
+        assert result[1].natal_body == "sun"
         assert result[1].transit_body == "moon"
-        assert result[1].aspect_type == AspectType.SQUARE
+        assert result[1].aspect_type == AspectType.OPPOSITION
         assert result[1].orb == 5.0
-        # Third should be mercury-mercury (5° separation)
-        assert result[2].natal_body == "mercury"
+        assert result[2].natal_body == "sun"
         assert result[2].transit_body == "mercury"
         assert result[2].aspect_type == AspectType.SQUARE
         assert result[2].orb == 5.0

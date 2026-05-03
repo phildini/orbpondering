@@ -179,6 +179,8 @@ def tarot_draw_from_seed(
     seed: int,
     spread_name: str,
 ) -> TarotReading:
+    from orbpondering.constants import HouseSystem
+    
     spread = get_spread(spread_name)
     positions = _shuffle_and_deal(seed, spread)
 
