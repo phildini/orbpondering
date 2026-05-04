@@ -48,6 +48,8 @@ Documentation = "https://github.com/phildini/orbpondering/blob/main/README.md"
 Repository = "https://github.com/phildini/orbpondering"
 Issues = "https://github.com/phildini/orbpondering/issues"
 Changelog = "https://github.com/phildini/orbpondering/blob/main/CHANGELOG.md"
+Mastodon = "https://wandering.shop/@phildini"
+Bluesky = "https://bsky.app/profile/phildini.net"
 
 [tool.hatch.version]
 path = "src/orbpondering/__init__.py"
