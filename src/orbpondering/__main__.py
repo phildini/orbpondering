@@ -75,6 +75,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Verbose educational output",
     )
+    parser.add_argument(
+        "--reversed",
+        "-r",
+        action="store_true",
+        help="Draw cards in reversed position",
+    )
     # Birth data arguments
     parser.add_argument(
         "--birth-date",
@@ -171,6 +177,7 @@ def main(argv: list[str] | None = None) -> int:
                     birth_data=birth_data,
                     house_system=house,
                     spread_name=args.spread,
+                    reversed_cards=args.reversed,
                 )
 
                 progress.update(task1, completed=100)
@@ -187,7 +194,8 @@ def main(argv: list[str] | None = None) -> int:
                 lon=args.lon,
                 birth_data=birth_data,
                 house_system=house,
-                spread=spread,
+                spread_name=args.spread,
+                reversed_cards=args.reversed,
             )
             for pos in reading.positions:
                 print(f"{pos.position_label}: {pos.card.name}")
@@ -225,6 +233,7 @@ def main(argv: list[str] | None = None) -> int:
                     lon=args.lon,
                     house_system=house,
                     spread_name=args.spread,
+                    reversed_cards=args.reversed,
                 )
 
                 progress.update(task1, completed=100)
@@ -241,6 +250,7 @@ def main(argv: list[str] | None = None) -> int:
                 lon=args.lon,
                 house_system=house,
                 spread_name=args.spread,
+                reversed_cards=args.reversed,
             )
             for pos in reading.positions:
                 print(f"{pos.position_label}: {pos.card.name}")

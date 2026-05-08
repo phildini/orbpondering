@@ -15,12 +15,34 @@ from orbpondering.utils import zodiac_sign_for_degree
 
 
 def _shuffle_and_deal(
-    seed: int, spread: Spread
+    seed: int, spread: Spread, reversed_cards: bool = False
 ) -> list[tuple[str, Card]]:
     rng = random.Random(seed)
     cards = list(DECK)
     rng.shuffle(cards)
     drawn = cards[: len(spread.positions)]
+    
+    # Apply reversals if requested
+    if reversed_cards:
+        # Reverse some cards (simple approach: reverse half)
+        num_reversed = len(drawn) // 2
+        reversed_indices = rng.sample(range(len(drawn)), num_reversed)
+        drawn_with_reversals = []
+        for i, (label, card) in enumerate(zip(spread.positions, drawn, strict=True)):
+            # Create a new card with reversed upright status if selected
+            if i in reversed_indices:
+                drawn_with_reversals.append((label, Card(
+                    name=card.name,
+                    arcana=card.arcana,
+                    suit=card.suit,
+                    number=card.number,
+                    keywords=card.keywords,
+                    upright=False  # Reversed
+                )))
+            else:
+                drawn_with_reversals.append((label, card))
+        return drawn_with_reversals
+    
     return list(zip(spread.positions, drawn, strict=True))
 
 
@@ -54,6 +76,7 @@ def compute_chart(
     )
     from orbpondering.constants import HouseSystem
     from orbpondering.houses import house_cusps
+    from orbpondering.models import PlanetaryPosition
 
     positions = planetary_positions(d, tz)
     asc = ascendant(d, lat, lon, tz)
@@ -62,11 +85,11 @@ def compute_chart(
     cusps = house_cusps(d, lat, lon, house_system)
 
     planetary_posns = {
-        body: type("PlanetaryPosition", (), {
-            "body": body,
-            "longitude": deg,
-            "zodiac_sign": zodiac_sign_for_degree(deg),
-        })()
+        body: PlanetaryPosition(
+            body=body,
+            longitude=deg,
+            zodiac_sign=zodiac_sign_for_degree(deg),
+        )
         for body, deg in positions.items()
     }
 
@@ -109,9 +132,10 @@ def daily_tarot_draw(
     house_system,
     spread: Spread,
     tz: str | None = None,
+    reversed_cards: bool = False,
 ) -> TarotReading:
     seed = chart_seed(d, lat, lon, house_system, tz=tz)
-    positions = _shuffle_and_deal(seed, spread)
+    positions = _shuffle_and_deal(seed, spread, reversed_cards)
 
     chart = compute_chart(d, lat, lon, house_system, tz)
 
@@ -143,6 +167,7 @@ def birth_tarot_draw(
     birth_data,
     house_system,
     spread_name: str,
+    reversed_cards: bool = False,
 ) -> TarotReading:
     """Draw a tarot spread using the user's natal chart + current transits."""
     from orbpondering.models import NatalChart
@@ -155,7 +180,7 @@ def birth_tarot_draw(
     seed = chart_seed(
         d, lat, lon, house_system, natal_chart, aspects, birth_data.tz
     )
-    positions = _shuffle_and_deal(seed, spread)
+    positions = _shuffle_and_deal(seed, spread, reversed_cards)
 
     # TODO: Use aspects for house assignment in card positions if desired
     card_positions = [
@@ -178,11 +203,12 @@ def birth_tarot_draw(
 def tarot_draw_from_seed(
     seed: int,
     spread_name: str,
+    reversed_cards: bool = False,
 ) -> TarotReading:
     from orbpondering.constants import HouseSystem
     
     spread = get_spread(spread_name)
-    positions = _shuffle_and_deal(seed, spread)
+    positions = _shuffle_and_deal(seed, spread, reversed_cards)
 
     card_positions = [
         CardPosition(position_label=label, card=card)
@@ -205,6 +231,7 @@ def tarot_draw_for_date(
     lon: float = 0.0,
     house_system=None,
     spread_name: str = "daily",
+    reversed_cards: bool = False,
 ) -> TarotReading:
     from orbpondering.constants import HouseSystem
     from orbpondering.spreads import get_spread
@@ -213,4 +240,4 @@ def tarot_draw_for_date(
         house_system = HouseSystem.WHOLE_SIGN
     
     spread = get_spread(spread_name)
-    return daily_tarot_draw(d, lat, lon, house_system, spread)
+    return daily_tarot_draw(d, lat, lon, house_system, spread, reversed_cards=reversed_cards)
