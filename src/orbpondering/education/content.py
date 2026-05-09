@@ -26,7 +26,7 @@ HOUSE_MEANINGS = {
 ELEMENT_MEANINGS = {
     "fire": "Energy, passion, will, action, inspiration",
     "earth": "Stability, material world, practicality, nature",
-    "air": "Intellect, communication, ideas, social connection", 
+    "air": "Intellect, communication, ideas, social connection",
     "water": "Emotion, intuition, feelings, subconscious",
 }
 
@@ -64,17 +64,21 @@ SPREAD_POSITIONS = {
     },
 }
 
+
 def get_house_meanings() -> dict[int, str]:
     """Return house meanings mapping."""
     return HOUSE_MEANINGS.copy()
+
 
 def get_element_meanings() -> dict[str, str]:
     """Return element meanings mapping."""
     return ELEMENT_MEANINGS.copy()
 
+
 def get_planetary_meanings() -> dict[str, str]:
     """Return planetary meanings mapping."""
     return PLANETARY_MEANINGS.copy()
+
 
 def get_spread_positions(spread_name: str) -> dict[str, str]:
     """Return position meanings for a specific spread."""

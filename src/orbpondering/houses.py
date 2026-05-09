@@ -50,17 +50,20 @@ def _placidus_cusps(asc_deg: float, mc_deg: float) -> list[float]:
 
 
 def house_cusps(
-    d: date, lat: float, lon: float, house_system: HouseSystem
+    d: date, lat: float, lon: float, house_system: HouseSystem | str
 ) -> list[float]:
     """Calculate house cusps for a given date, location, and house system."""
     asc = ascendant(d, lat, lon)
     mc = midheaven(d, lat, lon)
 
+    if isinstance(house_system, HouseSystem):
+        house_system = house_system.value
+
     handlers = {
-        HouseSystem.WHOLE_SIGN: lambda a, m: whole_sign_cusps(a),
-        HouseSystem.EQUAL: lambda a, m: equal_cusps(a),
-        HouseSystem.PORPHYRY: porphyry_cusps,
-        HouseSystem.PLACIDUS: _placidus_cusps,
+        HouseSystem.WHOLE_SIGN.value: lambda a, m: whole_sign_cusps(a),
+        HouseSystem.EQUAL.value: lambda a, m: equal_cusps(a),
+        HouseSystem.PORPHYRY.value: porphyry_cusps,
+        HouseSystem.PLACIDUS.value: _placidus_cusps,
     }
 
-    return handlers[house_system](asc, mc)
+    return handlers[str(house_system)](asc, mc)

@@ -7,8 +7,8 @@ from datetime import date, datetime
 
 from orbpondering.aspects import find_aspects
 from orbpondering.cards import DECK, Card
-from orbpondering.constants import Arcana
-from orbpondering.models import Chart, CardPosition, TarotReading
+from orbpondering.constants import Arcana, HouseSystem
+from orbpondering.models import CardPosition, Chart, NatalChart, TarotReading
 from orbpondering.seed import chart_seed
 from orbpondering.spreads import Spread, get_spread
 from orbpondering.utils import zodiac_sign_for_degree
@@ -21,7 +21,7 @@ def _shuffle_and_deal(
     cards = list(DECK)
     rng.shuffle(cards)
     drawn = cards[: len(spread.positions)]
-    
+
     # Apply reversals if requested
     if reversed_cards:
         # Reverse some cards (simple approach: reverse half)
@@ -31,18 +31,23 @@ def _shuffle_and_deal(
         for i, (label, card) in enumerate(zip(spread.positions, drawn, strict=True)):
             # Create a new card with reversed upright status if selected
             if i in reversed_indices:
-                drawn_with_reversals.append((label, Card(
-                    name=card.name,
-                    arcana=card.arcana,
-                    suit=card.suit,
-                    number=card.number,
-                    keywords=card.keywords,
-                    upright=False  # Reversed
-                )))
+                drawn_with_reversals.append(
+                    (
+                        label,
+                        Card(
+                            name=card.name,
+                            arcana=card.arcana,
+                            suit=card.suit,
+                            number=card.number,
+                            keywords=card.keywords,
+                            upright=False,  # Reversed
+                        ),
+                    )
+                )
             else:
                 drawn_with_reversals.append((label, card))
         return drawn_with_reversals
-    
+
     return list(zip(spread.positions, drawn, strict=True))
 
 
@@ -74,7 +79,6 @@ def compute_chart(
         planetary_positions,
         sidereal_time,
     )
-    from orbpondering.constants import HouseSystem
     from orbpondering.houses import house_cusps
     from orbpondering.models import PlanetaryPosition
 
@@ -97,7 +101,7 @@ def compute_chart(
     for deg in positions.values():
         sign = zodiac_sign_for_degree(deg)
         elements[sign.element] += 1
-    dominant = max(elements, key=elements.get)
+    dominant = max(elements, key=elements.get)  # pyright: ignore[reportCallIssue, reportArgumentType]
 
     seed = chart_seed(d, lat, lon, house_system, tz=tz)
     return Chart(
@@ -117,7 +121,7 @@ def compute_chart(
 def compute_natal_chart(birth_data) -> NatalChart:
     from orbpondering.astronomy import planetary_positions
     from orbpondering.models import NatalChart
-    
+
     positions = planetary_positions(birth_data.date, birth_data.tz)
     return NatalChart(
         birth_data=birth_data,
@@ -129,7 +133,7 @@ def daily_tarot_draw(
     d: date | datetime,
     lat: float,
     lon: float,
-    house_system,
+    house_system: HouseSystem,
     spread: Spread,
     tz: str | None = None,
     reversed_cards: bool = False,
@@ -165,27 +169,23 @@ def birth_tarot_draw(
     lat: float,
     lon: float,
     birth_data,
-    house_system,
+    house_system: HouseSystem,
     spread_name: str,
     reversed_cards: bool = False,
 ) -> TarotReading:
     """Draw a tarot spread using the user's natal chart + current transits."""
-    from orbpondering.models import NatalChart
     from orbpondering.spreads import get_spread
-    
+
     spread = get_spread(spread_name)
     transit_chart = compute_chart(d, lat, lon, house_system, birth_data.tz)
     natal_chart = compute_natal_chart(birth_data)
     aspects = find_aspects(natal_chart, transit_chart)
-    seed = chart_seed(
-        d, lat, lon, house_system, natal_chart, aspects, birth_data.tz
-    )
+    seed = chart_seed(d, lat, lon, house_system, natal_chart, aspects, birth_data.tz)
     positions = _shuffle_and_deal(seed, spread, reversed_cards)
 
     # TODO: Use aspects for house assignment in card positions if desired
     card_positions = [
-        CardPosition(position_label=label, card=card)
-        for label, card in positions
+        CardPosition(position_label=label, card=card) for label, card in positions
     ]
 
     return TarotReading(
@@ -206,13 +206,12 @@ def tarot_draw_from_seed(
     reversed_cards: bool = False,
 ) -> TarotReading:
     from orbpondering.constants import HouseSystem
-    
+
     spread = get_spread(spread_name)
     positions = _shuffle_and_deal(seed, spread, reversed_cards)
 
     card_positions = [
-        CardPosition(position_label=label, card=card)
-        for label, card in positions
+        CardPosition(position_label=label, card=card) for label, card in positions
     ]
 
     return TarotReading(
@@ -229,15 +228,17 @@ def tarot_draw_for_date(
     d: date,
     lat: float = 0.0,
     lon: float = 0.0,
-    house_system=None,
+    house_system: HouseSystem | None = None,
     spread_name: str = "daily",
     reversed_cards: bool = False,
 ) -> TarotReading:
     from orbpondering.constants import HouseSystem
     from orbpondering.spreads import get_spread
-    
+
     if house_system is None:
         house_system = HouseSystem.WHOLE_SIGN
-    
-    spread = get_spread(spread_name)
-    return daily_tarot_draw(d, lat, lon, house_system, spread, reversed_cards=reversed_cards)
+
+    spread: Spread = get_spread(spread_name)
+    return daily_tarot_draw(
+        d, lat, lon, house_system, spread, reversed_cards=reversed_cards
+    )

@@ -40,7 +40,7 @@ def run_education(
         "house_system": house_system,
         "spread_name": spread_name,
     }
-    
+
     # Run each step in sequence
     steps = [
         step_planetary_positions,
@@ -50,10 +50,10 @@ def run_education(
         step_seed_generation,
         step_card_draw,
     ]
-    
+
     for step in steps:
         step(console, ctx, verbose)
-    
+
     return ctx.get("card_draw", {})
 
 
@@ -77,7 +77,7 @@ def run_education_with_natal(
         "spread_name": spread_name,
         "birth_data": birth_data,
     }
-    
+
     # Run each step in sequence
     steps = [
         step_birth_data,
@@ -91,8 +91,8 @@ def run_education_with_natal(
         step_seed_generation,
         step_card_draw,
     ]
-    
+
     for step in steps:
         step(console, ctx, verbose)
-    
+
     return ctx.get("card_draw", {})

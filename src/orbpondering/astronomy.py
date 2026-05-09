@@ -70,7 +70,9 @@ def sidereal_time(d: date | datetime, lon: float, tz: str | None = None) -> floa
     return _normalize(float(lst.hour * 15.0))
 
 
-def ascendant(d: date | datetime, lat: float, lon: float, tz: str | None = None) -> float:
+def ascendant(
+    d: date | datetime, lat: float, lon: float, tz: str | None = None
+) -> float:
     t = _to_time(d, tz)
     lst_deg = t.sidereal_time("mean", longitude=lon * u.deg).deg
     lst_rad = np.deg2rad(lst_deg)
@@ -88,7 +90,9 @@ def ascendant(d: date | datetime, lat: float, lon: float, tz: str | None = None)
     return _normalize(np.rad2deg(np.arctan2(y, x)))
 
 
-def midheaven(d: date | datetime, lat: float, lon: float, tz: str | None = None) -> float:
+def midheaven(
+    d: date | datetime, lat: float, lon: float, tz: str | None = None
+) -> float:
     t = _to_time(d, tz)
     lst_deg = t.sidereal_time("mean", longitude=lon * u.deg).deg
     lst_rad = np.deg2rad(lst_deg)

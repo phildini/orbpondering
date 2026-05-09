@@ -16,14 +16,16 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class PlanetaryPosition:
     """A celestial body's position in the zodiac."""
-    body: str        # "sun", "moon", etc.
-    longitude: float # degrees 0-360
+
+    body: str  # "sun", "moon", etc.
+    longitude: float  # degrees 0-360
     zodiac_sign: ZodiacSign
 
 
 @dataclass(frozen=True)
 class BirthData:
     """User's birth information."""
+
     date: date
     time: time | None  # None → noon UTC
     lat: float
@@ -34,6 +36,7 @@ class BirthData:
 @dataclass(frozen=True)
 class Aspect:
     """Angular relationship between a natal and transit planet."""
+
     natal_body: str
     transit_body: str
     separation: float
@@ -44,6 +47,7 @@ class Aspect:
 @dataclass(frozen=True)
 class NatalChart:
     """Complete natal astrological chart."""
+
     birth_data: BirthData
     planetary_positions: dict[str, float]
 
@@ -51,6 +55,7 @@ class NatalChart:
     def house_cusps(self) -> dict[HouseSystem, list[float]]:
         """Compute all 4 house systems on first access."""
         from orbpondering.houses import house_cusps
+
         return {
             hs: house_cusps(
                 self.birth_data.date,
@@ -65,6 +70,7 @@ class NatalChart:
 @dataclass(frozen=True)
 class Chart:
     """Complete astrological chart for a given date and location."""
+
     date: date
     latitude: float
     longitude: float
@@ -80,6 +86,7 @@ class Chart:
 @dataclass(frozen=True)
 class CardPosition:
     """A card in its spread position."""
+
     position_label: str
     card: Card
     house_number: int | None = None
@@ -90,6 +97,7 @@ class CardPosition:
 @dataclass(frozen=True)
 class TarotReading:
     """Complete tarot reading result."""
+
     date: date
     house_system: HouseSystem
     spread: Spread

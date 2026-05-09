@@ -19,12 +19,12 @@ class ZodiacSign(Enum):
 
     ARIES = (0, 30, "Aries", "\u2648", "fire", "cardinal")
     TAURUS = (30, 60, "Taurus", "\u2649", "earth", "fixed")
-    GEMINI = (60, 90, "Gemini", "\u264A", "air", "mutable")
-    CANCER = (90, 120, "Cancer", "\u264B", "water", "cardinal")
-    LEO = (120, 150, "Leo", "\u264C", "fire", "fixed")
-    VIRGO = (150, 180, "Virgo", "\u264D", "earth", "mutable")
-    LIBRA = (180, 210, "Libra", "\u264E", "air", "cardinal")
-    SCORPIO = (210, 240, "Scorpio", "\u264F", "water", "fixed")
+    GEMINI = (60, 90, "Gemini", "\u264a", "air", "mutable")
+    CANCER = (90, 120, "Cancer", "\u264b", "water", "cardinal")
+    LEO = (120, 150, "Leo", "\u264c", "fire", "fixed")
+    VIRGO = (150, 180, "Virgo", "\u264d", "earth", "mutable")
+    LIBRA = (180, 210, "Libra", "\u264e", "air", "cardinal")
+    SCORPIO = (210, 240, "Scorpio", "\u264f", "water", "fixed")
     SAGITTARIUS = (240, 270, "Sagittarius", "\u2650", "fire", "mutable")
     CAPRICORN = (270, 300, "Capricorn", "\u2651", "earth", "cardinal")
     AQUARIUS = (300, 330, "Aquarius", "\u2652", "air", "fixed")
@@ -57,10 +57,10 @@ class Arcana(Enum):
 class Suit(Enum):
     """The four suits of the Minor Arcana."""
 
-    WANDS = ("wands", "fire", "\u26A1")
+    WANDS = ("wands", "fire", "\u26a1")
     CUPS = ("cups", "water", "\u2617")
     SWORDS = ("swords", "air", "\u2694")
-    PENTACLES = ("pentacles", "earth", "\u2B50")
+    PENTACLES = ("pentacles", "earth", "\u2b50")
 
     def __init__(self, full_name: str, element: str, symbol: str) -> None:
         self.full_name = full_name

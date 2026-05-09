@@ -19,11 +19,11 @@ def find_aspects(natal, transit) -> tuple[Aspect, ...]:
     aspects = []
     for natal_body, natal_lon in natal.planetary_positions.items():
         # Handle both raw floats and PlanetaryPosition objects
-        if hasattr(natal_lon, 'longitude'):
+        if hasattr(natal_lon, "longitude"):
             natal_lon = natal_lon.longitude
         for transit_body, transit_lon in transit.planetary_positions.items():
             # Handle both raw floats and PlanetaryPosition objects
-            if hasattr(transit_lon, 'longitude'):
+            if hasattr(transit_lon, "longitude"):
                 transit_lon = transit_lon.longitude
             sep = _angular_separation(natal_lon, transit_lon)
             aspect_type, orb = _classify_aspect(sep)
@@ -41,7 +41,9 @@ def find_aspects(natal, transit) -> tuple[Aspect, ...]:
     return tuple(sorted(aspects, key=lambda a: a.orb))
 
 
-def _classify_aspect(separation: float) -> tuple[AspectType, float] | tuple[None, float]:
+def _classify_aspect(
+    separation: float,
+) -> tuple[AspectType, float] | tuple[None, float]:
     """Classify an angular separation into an aspect."""
     for aspect_type in AspectType:
         ideal, max_orb = aspect_type.value

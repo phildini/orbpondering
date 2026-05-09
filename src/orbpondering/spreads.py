@@ -40,7 +40,5 @@ SPREADS: dict[str, Spread] = {
 
 def get_spread(name: str) -> Spread:
     if name not in SPREADS:
-        raise KeyError(
-            f"Spread '{name}' not found. Available: {', '.join(SPREADS)}"
-        )
+        raise KeyError(f"Spread '{name}' not found. Available: {', '.join(SPREADS)}")
     return SPREADS[name]

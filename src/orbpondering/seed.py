@@ -5,18 +5,18 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import date, datetime
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from orbpondering.models import NatalChart, Chart
-    from orbpondering.constants import HouseSystem
 
 from orbpondering.astronomy import planetary_positions
+from orbpondering.constants import HouseSystem
 from orbpondering.houses import house_cusps
+from orbpondering.models import Aspect, NatalChart
 
 
 def chart_seed(
-    d: date | datetime, lat: float, lon: float, house_system: HouseSystem,
+    d: date | datetime,
+    lat: float,
+    lon: float,
+    house_system: HouseSystem | str,
     natal_chart: NatalChart | None = None,
     aspects: tuple[Aspect, ...] = (),
     tz: str | None = None,
@@ -25,15 +25,18 @@ def chart_seed(
     positions = planetary_positions(d, tz)
     cusps = house_cusps(d, lat, lon, house_system)
 
+    if isinstance(house_system, HouseSystem):
+        house_system_key: str = house_system.value
+
     raw = {
         "date": d.isoformat() if isinstance(d, datetime) else d.isoformat(),
         "lat": lat,
         "lon": lon,
-        "house_system": house_system.value,
+        "house_system": house_system_key,
         "planets": positions,
         "cusps": cusps,
     }
-    
+
     if natal_chart:
         raw["natal_date"] = natal_chart.birth_data.date.isoformat()
         raw["natal_planets"] = natal_chart.planetary_positions

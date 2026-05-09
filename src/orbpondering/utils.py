@@ -16,7 +16,7 @@ def _normalize(deg: float) -> float:
 def zodiac_sign_for_degree(deg: float) -> ZodiacSign:
     """Map ecliptic longitude to zodiac sign."""
     from orbpondering.constants import ZodiacSign
-    
+
     normalized = deg % 360.0
     for sign in ZodiacSign:
         if sign.start_deg <= normalized < sign.end_deg:
@@ -27,8 +27,8 @@ def zodiac_sign_for_degree(deg: float) -> ZodiacSign:
 
 PLANET_SYMBOLS = {
     "sun": "\u2609",
-    "moon": "\u263D", 
-    "mercury": "\u263F",
+    "moon": "\u263d",
+    "mercury": "\u263f",
     "venus": "\u2640",
     "mars": "\u2642",
     "jupiter": "\u2643",

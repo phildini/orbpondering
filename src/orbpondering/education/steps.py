@@ -20,23 +20,17 @@ def _get_suit_color(suit) -> str:
     return colors.get(suit.full_name.lower(), "white")
 
 
-def step_birth_data(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_birth_data(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.models import BirthData
-    
+
     birth_data = ctx["birth_data"]
-    
-    console.print(
-        f"\n[bold cyan]STEP 0: Birth Data[/]"
-    )
+
+    console.print(f"\n[bold cyan]STEP 0: Birth Data[/]")
     console.print(
         f"[dim]Your birth information entered for natal chart calculations[/]"
     )
-    console.print(
-        f"[dim]for {birth_data.date.strftime('%B %d, %Y')}[/]"
-    )
-    
+    console.print(f"[dim]for {birth_data.date.strftime('%B %d, %Y')}[/]")
+
     if birth_data.time:
         console.print(f"  Birth Time: {birth_data.time.strftime('%H:%M')} UTC")
     else:
@@ -46,26 +40,18 @@ def step_birth_data(
         console.print(f"  Timezone: {birth_data.tz}")
 
 
-def step_natal_positions(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_natal_positions(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.astronomy import planetary_positions
     from orbpondering.draw import compute_natal_chart
     from orbpondering.models import BirthData
-    
+
     birth_data = ctx["birth_data"]
     natal_chart = compute_natal_chart(birth_data)
     ctx["natal_positions"] = natal_chart.planetary_positions
 
-    console.print(
-        f"\n[bold cyan]STEP 1: Natal Planetary Positions[/]"
-    )
-    console.print(
-        f"[dim]Where each planet was positioned at your birth[/]"
-    )
-    console.print(
-        f"[dim]for {birth_data.date.strftime('%B %d, %Y')}[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 1: Natal Planetary Positions[/]")
+    console.print(f"[dim]Where each planet was positioned at your birth[/]")
+    console.print(f"[dim]for {birth_data.date.strftime('%B %d, %Y')}[/]\n")
 
     for body, deg in ctx["natal_positions"].items():
         symbol = PLANET_SYMBOLS.get(body, body[0].upper())
@@ -76,29 +62,32 @@ def step_natal_positions(
         )
 
 
-def step_natal_houses(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_natal_houses(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.draw import compute_natal_chart
     from orbpondering.models import BirthData
-    
+
     birth_data = ctx["birth_data"]
     natal_chart = compute_natal_chart(birth_data)
     ctx["natal_house_cusps"] = natal_chart.house_cusps
 
-    console.print(
-        f"\n[bold cyan]STEP 2: Natal House Cusps[/]"
-    )
-    console.print(
-        f"[dim]12 house boundaries based on your birth chart[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 2: Natal House Cusps[/]")
+    console.print(f"[dim]12 house boundaries based on your birth chart[/]\n")
 
     for house_system, cusps in natal_chart.house_cusps.items():
         console.print(f"  {house_system.value.replace('_', ' ').title()}:")
         house_titles = [
-            "Self", "Resources", "Communication", "Home",
-            "Creativity", "Health", "Partnerships", "Transformation",
-            "Philosophy", "Career", "Friendships", "Subconscious",
+            "Self",
+            "Resources",
+            "Communication",
+            "Home",
+            "Creativity",
+            "Health",
+            "Partnerships",
+            "Transformation",
+            "Philosophy",
+            "Career",
+            "Friendships",
+            "Subconscious",
         ]
         for idx, cusp in enumerate(cusps, 1):
             sign = zodiac_sign_for_degree(cusp)
@@ -109,22 +98,14 @@ def step_natal_houses(
         console.print()
 
 
-def step_planetary_positions(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_planetary_positions(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.astronomy import planetary_positions
 
     ctx["planetary_positions"] = planetary_positions(ctx["date"])
 
-    console.print(
-        f"\n[bold cyan]STEP 3: Planetary Positions[/]"
-    )
-    console.print(
-        f"[dim]Looking up where each planet sits in the sky at noon UTC[/]"
-    )
-    console.print(
-        f"[dim]for {ctx['date'].strftime('%B %d, %Y')}...[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 3: Planetary Positions[/]")
+    console.print(f"[dim]Looking up where each planet sits in the sky at noon UTC[/]")
+    console.print(f"[dim]for {ctx['date'].strftime('%B %d, %Y')}...[/]\n")
 
     for body, deg in ctx["planetary_positions"].items():
         symbol = PLANET_SYMBOLS.get(body, body[0].upper())
@@ -138,9 +119,7 @@ def step_planetary_positions(
         _print_synthesis(ctx["planetary_positions"], console)
 
 
-def step_sidereal_time(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_sidereal_time(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.astronomy import ascendant, midheaven, sidereal_time
 
     lst = sidereal_time(ctx["date"], ctx["lon"])
@@ -150,15 +129,9 @@ def step_sidereal_time(
     ctx["ascendant"] = asc
     ctx["midheaven"] = mc
 
-    console.print(
-        f"\n[bold cyan]STEP 4: Sidereal Time & Angles[/]"
-    )
-    console.print(
-        f"[dim]The Sidereal Time tells us which part of the zodiac[/]"
-    )
-    console.print(
-        f"[dim]is rising at your location.[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 4: Sidereal Time & Angles[/]")
+    console.print(f"[dim]The Sidereal Time tells us which part of the zodiac[/]")
+    console.print(f"[dim]is rising at your location.[/]\n")
     console.print(f"  Local Sidereal Time: {lst:.1f}\u00b0")
     console.print(
         f"  Ascendant (rising):  {asc:.1f}\u00b0 \u2192 "
@@ -170,14 +143,10 @@ def step_sidereal_time(
     )
 
 
-def step_house_cusps(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_house_cusps(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.houses import house_cusps
 
-    cusps = house_cusps(
-        ctx["date"], ctx["lat"], ctx["lon"], ctx["house_system"]
-    )
+    cusps = house_cusps(ctx["date"], ctx["lat"], ctx["lon"], ctx["house_system"])
     ctx["house_cusps"] = cusps
 
     console.print(
@@ -189,9 +158,18 @@ def step_house_cusps(
     )
 
     house_titles = [
-        "Self", "Resources", "Communication", "Home",
-        "Creativity", "Health", "Partnerships", "Transformation",
-        "Philosophy", "Career", "Friendships", "Subconscious",
+        "Self",
+        "Resources",
+        "Communication",
+        "Home",
+        "Creativity",
+        "Health",
+        "Partnerships",
+        "Transformation",
+        "Philosophy",
+        "Career",
+        "Friendships",
+        "Subconscious",
     ]
     for idx, cusp in enumerate(cusps, 1):
         sign = zodiac_sign_for_degree(cusp)
@@ -201,9 +179,7 @@ def step_house_cusps(
         )
 
 
-def step_planets_in_houses(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_planets_in_houses(console: Console, ctx: dict, verbose: bool) -> None:
     cusps = ctx.get("house_cusps", [])
     planets_in_houses = {}
 
@@ -217,12 +193,8 @@ def step_planets_in_houses(
 
     ctx["planets_in_houses"] = planets_in_houses
 
-    console.print(
-        f"\n[bold cyan]STEP 6: Planets in Houses[/]"
-    )
-    console.print(
-        f"[dim]Mapping each planet to its corresponding house.[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 6: Planets in Houses[/]")
+    console.print(f"[dim]Mapping each planet to its corresponding house.[/]\n")
 
     for planet, house_num in planets_in_houses.items():
         planet_deg = ctx["planetary_positions"][planet]
@@ -234,27 +206,25 @@ def step_planets_in_houses(
         )
 
 
-def step_aspects(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_aspects(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.aspects import find_aspects
     from orbpondering.draw import compute_natal_chart, compute_chart
     from orbpondering.models import BirthData
-    
+
     birth_data = ctx["birth_data"]
-    
-    transit_chart = compute_chart(ctx["date"], ctx["lat"], ctx["lon"], ctx["house_system"])
+
+    transit_chart = compute_chart(
+        ctx["date"], ctx["lat"], ctx["lon"], ctx["house_system"]
+    )
     natal_chart = compute_natal_chart(birth_data)
     aspects = find_aspects(natal_chart, transit_chart)
     ctx["aspects"] = aspects
 
-    console.print(
-        f"\n[bold cyan]STEP 7: Natal-Transit Aspects[/]"
-    )
+    console.print(f"\n[bold cyan]STEP 7: Natal-Transit Aspects[/]")
     console.print(
         f"[dim]Angular relationships between your natal chart and today's transits[/]\n"
     )
-    
+
     if aspects:
         for aspect in aspects:
             console.print(
@@ -266,29 +236,26 @@ def step_aspects(
         console.print("  No significant aspects detected.")
 
 
-def step_seed_generation(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_seed_generation(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.seed import chart_seed
     from orbpondering.models import BirthData
-    
+
     birth_data = ctx.get("birth_data")
     aspects = ctx.get("aspects", ())
-    
+
     seed = chart_seed(
-        ctx["date"], ctx["lat"], ctx["lon"], ctx["house_system"],
+        ctx["date"],
+        ctx["lat"],
+        ctx["lon"],
+        ctx["house_system"],
         natal_chart=compute_natal_chart(birth_data) if birth_data else None,
         aspects=aspects,
         tz=birth_data.tz if birth_data else None,
     )
     ctx["seed"] = seed
 
-    console.print(
-        f"\n[bold cyan]STEP 8: Generating the Seed[/]"
-    )
-    console.print(
-        f"[dim]Combining all chart data into a single SHA-256 hash[/]\n"
-    )
+    console.print(f"\n[bold cyan]STEP 8: Generating the Seed[/]")
+    console.print(f"[dim]Combining all chart data into a single SHA-256 hash[/]\n")
     console.print(
         f"  Planetary positions + house cusps + natal planets + aspects \u2192 JSON \u2192 SHA-256"
     )
@@ -298,17 +265,16 @@ def step_seed_generation(
     )
 
 
-def step_card_draw(
-    console: Console, ctx: dict, verbose: bool
-) -> None:
+def step_card_draw(console: Console, ctx: dict, verbose: bool) -> None:
     from orbpondering.draw import daily_tarot_draw, birth_tarot_draw
     from orbpondering.spreads import get_spread
-    
+
     spread = get_spread(ctx["spread_name"])
-    
+
     if "birth_data" in ctx:
         # Natal mode
         from orbpondering.models import BirthData
+
         birth_data = ctx["birth_data"]
         ctx["card_draw"] = birth_tarot_draw(
             ctx["date"],
@@ -328,9 +294,7 @@ def step_card_draw(
             spread,
         )
 
-    console.print(
-        f"\n[bold cyan]STEP 9: Drawing the Cards[/]"
-    )
+    console.print(f"\n[bold cyan]STEP 9: Drawing the Cards[/]")
     console.print(
         f"[dim]Using the astrological seed to deterministically draw cards.[/]\n"
     )
@@ -342,9 +306,7 @@ def step_card_draw(
         _render_card_with_context(pos, ctx, console)
 
 
-def _print_synthesis(
-    positions: dict[str, float], console: Console
-) -> None:
+def _print_synthesis(positions: dict[str, float], console: Console) -> None:
     elements = {"fire": 0, "earth": 0, "air": 0, "water": 0}
     for deg in positions.values():
         sign = zodiac_sign_for_degree(deg)
@@ -359,9 +321,7 @@ def _print_synthesis(
     )
 
 
-def _render_card_with_context(
-    pos: object, ctx: dict, console: Console
-) -> None:
+def _render_card_with_context(pos: object, ctx: dict, console: Console) -> None:
     card = pos.card
     position_label = pos.position_label
 
@@ -369,14 +329,14 @@ def _render_card_with_context(
         console.print(
             f"  \u2726 [bold white]{position_label}:[/] "
             f"[bold red]{card.name}[/] "
-            f"{ '\u2191' if getattr(card, 'upright', True) else '\u2193'}"
+            f"{'\u2191' if getattr(card, 'upright', True) else '\u2193'}"
         )
     else:
-        suit_symbol = getattr(card.suit, 'symbol', '')
+        suit_symbol = getattr(card.suit, "symbol", "")
         console.print(
             f"  \u2727 [bold white]{position_label}:[/] "
             f"[_get_suit_color(card.suit)]{suit_symbol}[/] {card.name} "
-            f"{ '\u2191' if getattr(card, 'upright', True) else '\u2193'}"
+            f"{'\u2191' if getattr(card, 'upright', True) else '\u2193'}"
         )
 
     keywords = ", ".join(card.keywords) if card.keywords else "No keywords"

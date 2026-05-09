@@ -11,6 +11,7 @@ from orbpondering.constants import HouseSystem
 @dataclass
 class EducationContext:
     """Shared state passed between education steps."""
+
     date: date
     lat: float
     lon: float
