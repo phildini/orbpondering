@@ -3,7 +3,12 @@ from datetime import date
 import pytest
 
 from orbpondering.constants import HouseSystem
-from orbpondering.houses import equal_cusps, house_cusps, porphyry_cusps, whole_sign_cusps
+from orbpondering.houses import (
+    equal_cusps,
+    house_cusps,
+    porphyry_cusps,
+    whole_sign_cusps,
+)
 
 
 def test_whole_sign_12_cusps() -> None:
@@ -34,5 +39,5 @@ def test_all_house_systems_return_12_cusps(hs: HouseSystem) -> None:
 
 def test_whole_sign_cusp_order() -> None:
     cusps = whole_sign_cusps(157.5)
-    assert cusps[0] == 150  
+    assert cusps[0] == 150
     assert cusps[1] == 180

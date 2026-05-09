@@ -1,7 +1,6 @@
 """Edge case tests."""
 
 import io
-import subprocess
 import sys
 from datetime import date
 from unittest.mock import patch
@@ -9,7 +8,6 @@ from unittest.mock import patch
 import pytest
 
 from orbpondering.constants import HouseSystem
-from orbpondering.display import display_reading
 from orbpondering.draw import tarot_draw_for_date
 from orbpondering.spreads import Spread, get_spread
 

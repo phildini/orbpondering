@@ -15,9 +15,6 @@ class TestChartDataclass:
     def test_chart_is_dataclass(self) -> None:
         assert is_dataclass(Chart)
 
-    def test_chart_is_frozen(self) -> None:
-        assert Chart.__dataclass_params__.frozen
-
     def test_chart_creation(self, sample_date, sample_location) -> None:
         chart = Chart(
             date=sample_date,
@@ -27,7 +24,20 @@ class TestChartDataclass:
             planetary_positions={},
             ascendant=123.45,
             midheaven=234.56,
-            house_cusps=[0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0],
+            house_cusps=[
+                0.0,
+                30.0,
+                60.0,
+                90.0,
+                120.0,
+                150.0,
+                180.0,
+                210.0,
+                240.0,
+                270.0,
+                300.0,
+                330.0,
+            ],
             seed=987654321,
             dominant_element="fire",
         )
@@ -55,14 +65,21 @@ class TestChartDataclass:
             dominant_element="earth",
         )
         with pytest.raises((FrozenInstanceError, TypeError)):
-            chart.date = date(2026, 1, 1)
+            chart.date = date(2026, 1, 1)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_chart_has_all_required_fields(self) -> None:
         field_names = {f.name for f in fields(Chart)}
         expected = {
-            "date", "latitude", "longitude", "house_system",
-            "planetary_positions", "ascendant", "midheaven",
-            "house_cusps", "seed", "dominant_element",
+            "date",
+            "latitude",
+            "longitude",
+            "house_system",
+            "planetary_positions",
+            "ascendant",
+            "midheaven",
+            "house_cusps",
+            "seed",
+            "dominant_element",
         }
         assert expected == field_names
 
@@ -70,9 +87,6 @@ class TestChartDataclass:
 class TestPlanetaryPositionDataclass:
     def test_planetary_position_is_dataclass(self) -> None:
         assert is_dataclass(PlanetaryPosition)
-
-    def test_planetary_position_is_frozen(self) -> None:
-        assert PlanetaryPosition.__dataclass_params__.frozen
 
     def test_planetary_position_creation(self) -> None:
         pp = PlanetaryPosition(
@@ -90,15 +104,12 @@ class TestPlanetaryPositionDataclass:
             zodiac_sign=None,  # type: ignore[arg-type]
         )
         with pytest.raises((FrozenInstanceError, TypeError)):
-            pp.longitude = 200.0
+            pp.longitude = 200.0  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class TestCardPositionDataclass:
     def test_card_position_is_dataclass(self) -> None:
         assert is_dataclass(CardPosition)
-
-    def test_card_position_is_frozen(self) -> None:
-        assert CardPosition.__dataclass_params__.frozen
 
     def test_card_position_with_required_fields(self) -> None:
         card = Card(name="The Fool", arcana=Arcana.MAJOR, keywords=("beginnings",))
@@ -132,9 +143,6 @@ class TestCardPositionDataclass:
 class TestTarotReadingDataclass:
     def test_tarot_reading_is_dataclass(self) -> None:
         assert is_dataclass(TarotReading)
-
-    def test_tarot_reading_is_frozen(self) -> None:
-        assert TarotReading.__dataclass_params__.frozen
 
     def test_tarot_reading_creation(self, sample_date) -> None:
         spread = Spread(name="Daily", positions=("Theme",))
@@ -193,7 +201,7 @@ class TestTarotReadingDataclass:
             chart=None,
         )
         with pytest.raises((FrozenInstanceError, TypeError)):
-            reading.seed = 99999
+            reading.seed = 99999  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_tarot_reading_chart_is_optional(self, sample_date) -> None:
         spread = Spread(name="Daily", positions=("Theme",))

@@ -2,8 +2,6 @@
 
 from datetime import date
 
-import pytest
-
 from orbpondering.constants import HouseSystem
 from orbpondering.seed import chart_seed
 
@@ -67,7 +65,9 @@ class TestChartSeed:
         seed2 = chart_seed(sample_date, 40.7, 0.0, HouseSystem.WHOLE_SIGN)
         assert seed1 != seed2
 
-    def test_different_house_systems_different_seeds(self, sample_date, sample_location) -> None:
+    def test_different_house_systems_different_seeds(
+        self, sample_date, sample_location
+    ) -> None:
         seeds = set()
         for hs in HouseSystem:
             seed = chart_seed(
@@ -94,7 +94,9 @@ class TestChartSeed:
         value = rng.random()
         assert 0.0 <= value < 1.0
 
-    def test_seed_reproducibility_with_random(self, sample_date, sample_location) -> None:
+    def test_seed_reproducibility_with_random(
+        self, sample_date, sample_location
+    ) -> None:
         import random
 
         seed = chart_seed(

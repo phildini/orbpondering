@@ -1,13 +1,16 @@
 """Tests for the draw pipeline."""
 
 import random
-from datetime import date
 
 import pytest
 
-from orbpondering.cards import DECK, Arcana
+from orbpondering.cards import DECK
 from orbpondering.constants import HouseSystem
-from orbpondering.draw import daily_tarot_draw, tarot_draw_for_date, tarot_draw_from_seed
+from orbpondering.draw import (
+    daily_tarot_draw,
+    tarot_draw_for_date,
+    tarot_draw_from_seed,
+)
 from orbpondering.models import CardPosition, TarotReading
 from orbpondering.spreads import SPREADS, Spread
 
@@ -66,7 +69,9 @@ class TestTarotDrawForDate:
 
 class TestDailyTarotDraw:
     @pytest.mark.parametrize("house_system", list(HouseSystem))
-    def test_all_house_systems(self, sample_date, sample_location, house_system: HouseSystem) -> None:
+    def test_all_house_systems(
+        self, sample_date, sample_location, house_system: HouseSystem
+    ) -> None:
         spread = SPREADS["three_card"]
         reading = daily_tarot_draw(
             d=sample_date,
@@ -103,7 +108,10 @@ class TestDailyTarotDraw:
             spread=spread,
         )
         expected_seed = chart_seed(
-            sample_date, sample_location["lat"], sample_location["lon"], HouseSystem.WHOLE_SIGN
+            sample_date,
+            sample_location["lat"],
+            sample_location["lon"],
+            HouseSystem.WHOLE_SIGN,
         )
         assert reading.seed == expected_seed
 

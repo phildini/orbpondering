@@ -1,13 +1,11 @@
 """Test basic natal chart functionality."""
 
-import pytest
 from datetime import date
 
 from orbpondering.aspects import find_aspects
 from orbpondering.constants import HouseSystem
-from orbpondering.draw import birth_tarot_draw, compute_natal_chart, compute_chart
-from orbpondering.models import Aspect, BirthData, NatalChart
-from orbpondering.seed import chart_seed
+from orbpondering.draw import birth_tarot_draw, compute_natal_chart
+from orbpondering.models import BirthData, NatalChart
 
 
 class TestNatalChart:
@@ -29,6 +27,7 @@ class TestNatalChart:
     def test_compute_chart_with_time(self) -> None:
         """Test computing a chart with exact time."""
         from datetime import time
+
         birth_data = BirthData(
             date=date(1990, 5, 15),
             time=time(14, 30),
@@ -45,12 +44,22 @@ class TestNatalChart:
         natal_positions = {"sun": 0.0, "moon": 90.0}
         transit_positions = {"sun": 2.0, "moon": 90.0}
         natal = NatalChart(
-            birth_data=BirthData(date="2025-01-01", time=None, lat=0.0, lon=0.0, tz=None),
+            birth_data=BirthData(
+                date="2025-01-01",  # pyright: ignore[reportArgumentType]
+                time=None,
+                lat=0.0,
+                lon=0.0,
+                tz=None,
+            ),
             planetary_positions=natal_positions,
         )
-        transit = type("Chart", (), {
-            "planetary_positions": transit_positions,
-        })()
+        transit = type(
+            "Chart",
+            (),
+            {
+                "planetary_positions": transit_positions,
+            },
+        )()
         result = find_aspects(natal, transit)
         # Should find some aspects, at least the sun-sun conjunction
         assert isinstance(result, tuple)
@@ -67,12 +76,7 @@ class TestNatalChart:
         )
         # This should not raise any exceptions
         reading = birth_tarot_draw(
-            date.today(),
-            0.0,
-            0.0,
-            birth_data,
-            HouseSystem.WHOLE_SIGN,
-            "daily"
+            date.today(), 0.0, 0.0, birth_data, HouseSystem.WHOLE_SIGN, "daily"
         )
         assert reading.natal_chart is not None
         assert reading.aspects is not None

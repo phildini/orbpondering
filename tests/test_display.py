@@ -9,7 +9,6 @@ from orbpondering.constants import Arcana, HouseSystem, Suit
 from orbpondering.models import CardPosition, TarotReading
 from orbpondering.spreads import Spread
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -19,8 +18,18 @@ from orbpondering.spreads import Spread
 def sample_reading() -> TarotReading:
     spread = Spread(name="Three Card Spread", positions=("Past", "Present", "Future"))
     cards = [
-        Card(name="The Tower", arcana=Arcana.MAJOR, keywords=("sudden_change", "upheaval")),
-        Card(name="Five of Cups", arcana=Arcana.MINOR, suit=Suit.CUPS, number=5, keywords=("regret", "loss")),
+        Card(
+            name="The Tower",
+            arcana=Arcana.MAJOR,
+            keywords=("sudden_change", "upheaval"),
+        ),
+        Card(
+            name="Five of Cups",
+            arcana=Arcana.MINOR,
+            suit=Suit.CUPS,
+            number=5,
+            keywords=("regret", "loss"),
+        ),
         Card(name="The Sun", arcana=Arcana.MAJOR, keywords=("positivity", "fun")),
     ]
     positions = [

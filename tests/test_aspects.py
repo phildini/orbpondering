@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
-
-from orbpondering.aspects import find_aspects, _angular_separation, _classify_aspect
+from orbpondering.aspects import _angular_separation, _classify_aspect, find_aspects
 from orbpondering.constants import AspectType
-from orbpondering.models import Aspect, BirthData, NatalChart
-from orbpondering.spreads import Spread
+from orbpondering.models import BirthData, NatalChart
 
 
 class TestAngularSeparation:
@@ -24,7 +21,9 @@ class TestAngularSeparation:
         assert _angular_separation(0.0, 270.0) == 90.0
 
     def test_separation_commutative(self) -> None:
-        assert _angular_separation(30.0, 60.0) == _angular_separation(60.0, 30.0) == 30.0
+        assert (
+            _angular_separation(30.0, 60.0) == _angular_separation(60.0, 30.0) == 30.0
+        )
 
     def test_separation_wraps(self) -> None:
         assert _angular_separation(350.0, 10.0) == 20.0
@@ -76,12 +75,22 @@ class TestFindAspects:
             "moon": 200.0,
         }
         natal = NatalChart(
-            birth_data=BirthData(date="2025-01-01", time=None, lat=0.0, lon=0.0, tz=None),
+            birth_data=BirthData(
+                date="2025-01-01",  # pyright: ignore[reportArgumentType]
+                time=None,
+                lat=0.0,
+                lon=0.0,
+                tz=None,
+            ),
             planetary_positions=natal_positions,
         )
-        transit = type("Chart", (), {
-            "planetary_positions": transit_positions,
-        })()
+        transit = type(
+            "Chart",
+            (),
+            {
+                "planetary_positions": transit_positions,
+            },
+        )()
         result = find_aspects(natal, transit)
         # All separations (30°, 160°, 70°, 100°) are outside aspect orbs
         assert result == ()
@@ -97,12 +106,22 @@ class TestFindAspects:
             "moon": 100.0,  # same as natal moon
         }
         natal = NatalChart(
-            birth_data=BirthData(date="2025-01-01", time=None, lat=0.0, lon=0.0, tz=None),
+            birth_data=BirthData(
+                date="2025-01-01",  # pyright: ignore[reportArgumentType]
+                time=None,
+                lat=0.0,
+                lon=0.0,
+                tz=None,
+            ),
             planetary_positions=natal_positions,
         )
-        transit = type("Chart", (), {
-            "planetary_positions": transit_positions,
-        })()
+        transit = type(
+            "Chart",
+            (),
+            {
+                "planetary_positions": transit_positions,
+            },
+        )()
         result = find_aspects(natal, transit)
         # Should detect 3 aspects from the combinations:
         # sun-sun: 2° difference, conjunction
@@ -139,12 +158,22 @@ class TestFindAspects:
             "mercury": 95.0,  # square
         }
         natal = NatalChart(
-            birth_data=BirthData(date="2025-01-01", time=None, lat=0.0, lon=0.0, tz=None),
+            birth_data=BirthData(
+                date="2025-01-01",  # pyright: ignore[reportArgumentType]
+                time=None,
+                lat=0.0,
+                lon=0.0,
+                tz=None,
+            ),
             planetary_positions=natal_positions,
         )
-        transit = type("Chart", (), {
-            "planetary_positions": transit_positions,
-        })()
+        transit = type(
+            "Chart",
+            (),
+            {
+                "planetary_positions": transit_positions,
+            },
+        )()
         result = find_aspects(natal, transit)
         # Should detect 9 aspects total from combinations
         assert len(result) == 9

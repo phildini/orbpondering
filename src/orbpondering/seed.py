@@ -26,13 +26,13 @@ def chart_seed(
     cusps = house_cusps(d, lat, lon, house_system)
 
     if isinstance(house_system, HouseSystem):
-        house_system_key: str = house_system.value
+        house_system = house_system.value
 
     raw = {
         "date": d.isoformat() if isinstance(d, datetime) else d.isoformat(),
         "lat": lat,
         "lon": lon,
-        "house_system": house_system_key,
+        "house_system": house_system,
         "planets": positions,
         "cusps": cusps,
     }
