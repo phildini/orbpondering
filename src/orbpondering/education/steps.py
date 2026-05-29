@@ -25,10 +25,8 @@ def step_birth_data(console: Console, ctx: dict, verbose: bool) -> None:
 
     birth_data = ctx["birth_data"]
 
-    console.print(f"\n[bold cyan]STEP 0: Birth Data[/]")
-    console.print(
-        f"[dim]Your birth information entered for natal chart calculations[/]"
-    )
+    console.print("\n[bold cyan]STEP 0: Birth Data[/]")
+    console.print("[dim]Your birth information entered for natal chart calculations[/]")
     console.print(f"[dim]for {birth_data.date.strftime('%B %d, %Y')}[/]")
 
     if birth_data.time:
@@ -70,8 +68,8 @@ def step_natal_houses(console: Console, ctx: dict, verbose: bool) -> None:
     natal_chart = compute_natal_chart(birth_data)
     ctx["natal_house_cusps"] = natal_chart.house_cusps
 
-    console.print(f"\n[bold cyan]STEP 2: Natal House Cusps[/]")
-    console.print(f"[dim]12 house boundaries based on your birth chart[/]\n")
+    console.print("\n[bold cyan]STEP 2: Natal House Cusps[/]")
+    console.print("[dim]12 house boundaries based on your birth chart[/]\n")
 
     for house_system, cusps in natal_chart.house_cusps.items():
         console.print(f"  {house_system.value.replace('_', ' ').title()}:")
@@ -129,9 +127,9 @@ def step_sidereal_time(console: Console, ctx: dict, verbose: bool) -> None:
     ctx["ascendant"] = asc
     ctx["midheaven"] = mc
 
-    console.print(f"\n[bold cyan]STEP 4: Sidereal Time & Angles[/]")
-    console.print(f"[dim]The Sidereal Time tells us which part of the zodiac[/]")
-    console.print(f"[dim]is rising at your location.[/]\n")
+    console.print("\n[bold cyan]STEP 4: Sidereal Time & Angles[/]")
+    console.print("[dim]The Sidereal Time tells us which part of the zodiac[/]")
+    console.print("[dim]is rising at your location.[/]\n")
     console.print(f"  Local Sidereal Time: {lst:.1f}\u00b0")
     console.print(
         f"  Ascendant (rising):  {asc:.1f}\u00b0 \u2192 "

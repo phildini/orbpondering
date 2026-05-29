@@ -1,0 +1,194 @@
+/* Main Screen CSS */
+
+#dashboard-title {
+    height: 3;
+    content-align: center middle;
+    background: $primary;
+    color: $text;
+}
+
+#status-message {
+    height: 2;
+    content-align: center middle;
+    color: $accent;
+}
+
+#main-content {
+    height: 1fr;
+    layout: horizontal;
+}
+
+#settings-panel {
+    width: 20;
+    border-right: solid $primary;
+    padding: 1;
+}
+
+#spread-view-panel {
+    width: 1fr;
+    padding: 1;
+}
+
+#chart-panel {
+    width: 25;
+    border-left: solid $primary;
+    padding: 1;
+}
+
+#main-controls {
+    layout: horizontal;
+    height: auto;
+}
+
+Button {
+    margin: 0 1;
+}
+
+/* Spread Layout */
+SpreadLayout {
+    border: solid $accent;
+    background: $surface;
+    padding: 2;
+}
+
+SpreadLayout .spread-empty {
+    color: $text-muted;
+    content-align: center middle;
+}
+
+/* Card Widget */
+CardWidget {
+    border: solid $primary;
+    background: $surface;
+    padding: 1 2;
+    width: 100%;
+    margin: 1;
+}
+
+CardWidget:hover {
+    border: solid $accent;
+    background: $surface-lighten-1;
+}
+
+/* Planetary Panel */
+PlanetaryPanel {
+    border: solid $primary;
+    background: $surface;
+}
+
+PlanetaryPanel .planetary-row {
+    layout: horizontal;
+}
+
+/* Settings screen */
+#settings-screen {
+    layout: vertical;
+    align: center middle;
+    padding: 2 4;
+    background: $surface;
+}
+
+#settings-title {
+    text-align: center;
+    color: $accent;
+    padding: 1;
+}
+
+#settings-form {
+    width: 60;
+}
+
+#settings-buttons {
+    layout: horizontal;
+}
+
+/* Card detail modal */
+#card-detail-container {
+    width: 60;
+    height: auto;
+    align: center middle;
+    background: $surface;
+    border: heavy $primary;
+    padding: 2;
+}
+
+#card-detail-name {
+    text-align: center;
+    color: $accent;
+    padding: 1;
+}
+
+#card-detail-info {
+    margin-bottom: 1;
+}
+
+#card-detail-keywords {
+    color: $text-muted;
+}
+
+#card-detail-element-section {
+    margin: 1 0;
+}
+
+#card-detail-buttons {
+    layout: horizontal;
+    align: center middle;
+}
+
+/* Reading history screen */
+#history-screen {
+    layout: vertical;
+    background: $surface;
+}
+
+#history-title {
+    text-align: center;
+    color: $accent;
+    padding: 1;
+}
+
+#readings-scroll {
+    height: 1fr;
+    border: solid $primary;
+}
+
+#readings-list {
+    padding: 1;
+}
+
+#no-readings-message {
+    text-align: center;
+    color: $text-muted;
+    padding: 2;
+}
+
+.reading-date {
+    color: $text;
+    text-style: bold;
+}
+
+.reading-seed {
+    color: $text-muted;
+}
+
+.reading-type {
+    color: $secondary;
+}
+
+.reading-load-btn {
+    margin: 0 1;
+}
+
+#history-buttons {
+    layout: horizontal;
+    align: center middle;
+    padding: 1;
+}
+
+/* Status bar */
+StatusBar {
+    dock: bottom;
+    height: 3;
+    background: $boost;
+    color: $text-muted;
+}

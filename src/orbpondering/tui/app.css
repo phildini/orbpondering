@@ -1,0 +1,15 @@
+/* Main TUI CSS */
+
+#main-container {
+    height: 1fr;
+}
+
+Header {
+    background: $primary;
+    color: $text;
+}
+
+Footer {
+    background: $boost;
+    color: $text-muted;
+}

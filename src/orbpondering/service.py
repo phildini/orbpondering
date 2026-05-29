@@ -1,15 +1,13 @@
 """Service layer for orbpondering with validation and persistence."""
 
 import json
-import os
-from dataclasses import asdict
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from typing import Optional
 
-from orbpondering.models import Chart, TarotReading
 from orbpondering.constants import HouseSystem
-from orbpondering.draw import compute_chart, daily_tarot_draw
+from orbpondering.draw import compute_chart
+from orbpondering.models import Chart, TarotReading
 
 
 def validate_chart(chart: Chart) -> bool:
@@ -75,7 +73,7 @@ def load_config(config_path: str = None) -> dict:
     }
 
 
-def save_config(config: dict, config_path: str = None) -> None:
+def save_config(config: dict, config_path: str | None = None) -> None:
     """Save configuration to TOML file."""
     if config_path is None:
         config_dir = Path.home() / ".config" / "orbpondering"
