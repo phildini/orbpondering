@@ -116,7 +116,9 @@ def reading_view(request):
 
     context = _build_reading_context(reading)
     context["today"] = today
-    return render(request, "frontend/reading_result.html", context)
+    is_htmx = request.headers.get("HX-Request") == "true"
+    template = "_reading_results.html" if is_htmx else "reading_result.html"
+    return render(request, f"frontend/{template}", context)
 
 
 def _build_reading_context(reading):

@@ -2,13 +2,14 @@
 {% block title %}New Reading{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
+<div id="reading-content" class="max-w-2xl mx-auto">
   <h1 class="text-3xl font-bold text-primary mb-2">New Reading</h1>
   <p class="text-base-content/70 mb-8">Set your date and location to seed the astrological draw.</p>
 
-  <form method="post" action="{% url 'reading-form' %}"
+  <form hx-post="{% url 'reading-form' %}"
+        hx-target="#reading-content"
+        hx-swap="outerHTML"
         class="card bg-base-200 p-6 space-y-4">
-    {% csrf_token %}
 
     <div class="form-control">
       <label class="label"><span class="label-text">Date</span></label>
@@ -88,6 +89,11 @@
     <button type="submit" class="btn btn-primary btn-block">
       ✦ Calculate Reading
     </button>
+
+    <div class="htmx-indicator flex items-center justify-center gap-3 py-4 text-accent">
+      <span class="loading loading-spinner loading-md"></span>
+      <span>Calculating chart... (first use may take a few seconds)</span>
+    </div>
   </form>
 </div>
 {% endblock %}
