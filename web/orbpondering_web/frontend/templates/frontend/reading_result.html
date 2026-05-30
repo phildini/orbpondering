@@ -1,0 +1,145 @@
+{% extends "frontend/base.html" %}
+{% block title %}Your Reading{% endblock %}
+
+{% block content %}
+{% if error %}
+<div class="max-w-2xl mx-auto">
+  <div class="alert alert-error shadow-lg">
+    <span>{{ error }}</span>
+  </div>
+  <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent mt-4">Try Again</a>
+</div>
+{% elif reading %}
+{% with r=reading %}
+<div class="max-w-4xl mx-auto space-y-8">
+
+  <!-- Header -->
+  <div class="text-center">
+    <h1 class="text-3xl font-bold text-primary">{{ r.spread.name }}</h1>
+    <p class="text-base-content/70">{{ r.date }} · Seed: <code class="text-accent">{{ r.seed|stringformat:"x"|truncatechars:16 }}</code></p>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid grid-cols-1 {% if r.positions|length > 1 %}md:grid-cols-3{% endif %} gap-4">
+    {% for pos in r.positions %}
+    <div class="card bg-base-200 border-l-4
+      {% if pos.card.element == 'fire' %}border-secondary{% elif pos.card.element == 'water' %}border-accent{% elif pos.card.element == 'air' %}border-warning{% elif pos.card.element == 'earth' %}border-success{% else %}border-primary{% endif %}">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <h2 class="card-title text-lg">{{ pos.card.name }}</h2>
+          {% if not pos.card.upright %}
+          <span class="badge badge-secondary">Reversed ↓</span>
+          {% else %}
+          <span class="badge badge-accent">Upright ↑</span>
+          {% endif %}
+        </div>
+        <p class="text-sm text-base-content/60">{{ pos.label }}</p>
+        {% if pos.card.arcana == 'minor' %}
+        <p class="text-sm">{{ pos.card.arcana|title }} · {{ pos.card.suit|title }}</p>
+        {% else %}
+        <p class="text-sm">{{ pos.card.arcana|title }} Arcana</p>
+        {% endif %}
+        {% if pos.card.keywords %}
+        <div class="flex flex-wrap gap-1 mt-2">
+          {% for kw in pos.card.keywords %}
+          <span class="badge badge-outline badge-sm text-xs">{{ kw|title }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="mt-2 text-xs text-base-content/40">
+          House {{ pos.house_number|default:"—" }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Chart -->
+  {% if r.chart %}
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title text-accent">Planetary Positions</h3>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra table-sm">
+          <thead>
+            <tr>
+              <th>Body</th>
+              <th>Position</th>
+              <th>Sign</th>
+              <th>Element</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for name, p in r.chart.planets.items %}
+            <tr>
+              <td class="font-medium">{{ name|title }}</td>
+              <td>{{ p.degree|floatformat:1 }}°</td>
+              <td>{{ p.sign_symbol }} {{ p.sign }}</td>
+              <td>
+                <span class="badge badge-sm
+                  {% if p.element == 'fire' %}badge-secondary{% elif p.element == 'water' %}badge-accent{% elif p.element == 'air' %}badge-warning{% else %}badge-success{% endif %}">
+                  {{ p.element|title }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-base-content/50 mt-2">
+        Asc: {{ r.chart.ascendant|floatformat:1 }}° · MC: {{ r.chart.midheaven|floatformat:1 }}°
+        · Dominant: {{ r.chart.dominant_element|title }}
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Natal Chart -->
+  {% if r.natal_chart %}
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title text-secondary">Natal Chart · {{ r.natal_chart.birth_date }}</h3>
+      <p class="text-xs text-base-content/50">Natal planetary positions at your birth.</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Aspects -->
+  {% if r.aspects %}
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title text-warning">Aspects</h3>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra table-sm">
+          <thead>
+            <tr><th>Natal</th><th>Transit</th><th>Aspect</th><th>Orb</th></tr>
+          </thead>
+          <tbody>
+            {% for a in r.aspects %}
+            <tr>
+              <td>{{ a.natal_body|title }}</td>
+              <td>{{ a.transit_body|title }}</td>
+              <td>{{ a.aspect_type|title }}</td>
+              <td>{{ a.orb|floatformat:1 }}°</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="text-center">
+    <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent">New Reading</a>
+  </div>
+
+</div>
+{% endwith %}
+{% else %}
+<div class="max-w-2xl mx-auto text-center">
+  <p class="text-base-content/70">No reading data found.</p>
+  <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent mt-4">Create a Reading</a>
+</div>
+{% endif %}
+{% endblock %}

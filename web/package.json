@@ -1,0 +1,12 @@
+{
+  "name": "orbpondering-web",
+  "private": true,
+  "scripts": {
+    "build": "npx tailwindcss -i ./orbpondering_web/frontend/static/src/input.css -o ./orbpondering_web/frontend/static/css/output.css --minify",
+    "watch": "npx tailwindcss -i ./orbpondering_web/frontend/static/src/input.css -o ./orbpondering_web/frontend/static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "daisyui": "^4.0.0"
+  }
+}
