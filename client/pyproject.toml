@@ -1,0 +1,32 @@
+[project]
+name = "orbpondering-client"
+version = "0.1.0"
+description = "Native client for Orbpondering tarot and astrology"
+requires-python = ">=3.12"
+dependencies = [
+    "toga>=0.4.0",
+    "httpx>=0.27.0",
+]
+
+[tool.briefcase]
+project_name = "Orbpondering"
+
+[tool.briefcase.app.orbpondering-client]
+formal_name = "Orbpondering"
+bundle = "net.phildini"
+sources = ["src/orbpondering_client"]
+
+[tool.briefcase.app.orbpondering-client.macOS]
+requires = ["toga-cocoa>=0.4.0"]
+
+[tool.briefcase.app.orbpondering-client.linux]
+requires = ["toga-gtk>=0.4.0"]
+
+[tool.briefcase.app.orbpondering-client.windows]
+requires = ["toga-winforms>=0.4.0"]
+
+[tool.briefcase.app.orbpondering-client.iOS]
+requires = ["toga-iOS>=0.4.0"]
+
+[tool.briefcase.app.orbpondering-client.android]
+requires = ["toga-android>=0.4.0"]
