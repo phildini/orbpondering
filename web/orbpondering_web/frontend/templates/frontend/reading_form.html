@@ -19,14 +19,21 @@
     <div class="grid grid-cols-2 gap-4">
       <div class="form-control">
         <label class="label"><span class="label-text">Latitude</span></label>
-        <input type="number" step="any" name="lat" value="0.0" placeholder="40.7128"
+        <input type="number" step="any" name="lat" id="lat-input" value="0.0" placeholder="40.7128"
                class="input input-bordered w-full">
       </div>
       <div class="form-control">
         <label class="label"><span class="label-text">Longitude</span></label>
-        <input type="number" step="any" name="lon" value="0.0" placeholder="-74.0060"
+        <input type="number" step="any" name="lon" id="lon-input" value="0.0" placeholder="-74.0060"
                class="input input-bordered w-full">
       </div>
+    </div>
+    <div class="flex justify-end">
+      <button type="button" id="locate-btn" class="btn btn-outline btn-accent btn-xs gap-1"
+              onclick="getLocation()">
+        📡 Use My Location
+      </button>
+      <span id="locate-status" class="text-xs text-accent hidden ml-2 self-center"></span>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
@@ -96,4 +103,45 @@
     </div>
   </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getLocation() {
+  var btn = document.getElementById('locate-btn');
+  var status = document.getElementById('locate-status');
+  btn.disabled = true;
+  status.className = 'text-xs text-warning ml-2 self-center';
+  status.textContent = 'Locating...';
+  status.classList.remove('hidden');
+
+  if (!navigator.geolocation) {
+    status.textContent = 'Geolocation not supported by your browser';
+    status.className = 'text-xs text-error ml-2 self-center';
+    btn.disabled = false;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      document.getElementById('lat-input').value = pos.coords.latitude.toFixed(4);
+      document.getElementById('lon-input').value = pos.coords.longitude.toFixed(4);
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      status.textContent = '\ud83d\udccd ' + pos.coords.latitude.toFixed(2) + ', ' + pos.coords.longitude.toFixed(2) + ' \u00b7 ' + tz;
+      status.className = 'text-xs text-success ml-2 self-center';
+      btn.disabled = false;
+    },
+    function(err) {
+      var msg = 'Location unavailable';
+      if (err.code === 1) msg = 'Location permission denied';
+      else if (err.code === 2) msg = 'Location unavailable (GPS timeout)';
+      else if (err.code === 3) msg = 'Location request timed out';
+      status.textContent = msg;
+      status.className = 'text-xs text-error ml-2 self-center';
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: false, timeout: 10000 }
+  );
+}
+</script>
 {% endblock %}

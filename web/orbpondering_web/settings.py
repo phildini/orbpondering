@@ -11,7 +11,15 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.environ.get("DJANGO_DB_PATH", BASE_DIR / "orbpondering.db"),
+    }
+}
+
 INSTALLED_APPS = [
+    "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
@@ -20,6 +28,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "orbpondering_web.api.auth.APIKeyMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -45,6 +55,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "orbpondering_web" / "frontend" / "static",
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 CORS_ALLOW_ALL_ORIGINS = True
 
