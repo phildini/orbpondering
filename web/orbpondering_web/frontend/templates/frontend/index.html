@@ -2,24 +2,24 @@
 {% block title %}Daily Tarot &amp; Astrology{% endblock %}
 
 {% block content %}
-<div class="hero min-h-[70vh]">
+<div class="hero min-h-[50vh] md:min-h-[70vh]">
   <div class="hero-content text-center">
     <div class="max-w-2xl">
-      <h1 class="text-6xl font-bold text-primary glow">Orbpondering</h1>
-      <p class="text-2xl text-accent mt-2">Tarot spreads seeded by the stars</p>
-      <p class="text-lg text-base-content/70 mt-6">
+      <h1 class="text-4xl md:text-6xl font-bold text-primary glow">Orbpondering</h1>
+      <p class="text-xl md:text-2xl text-accent mt-2">Tarot spreads seeded by the stars</p>
+      <p class="text-base md:text-lg text-base-content/70 mt-4 md:mt-6">
         Each card draw is uniquely determined by today's planetary positions.
         Your horoscope becomes a tarot spread — no two days are ever the same.
       </p>
-      <div class="flex gap-4 justify-center mt-8">
-        <a href="{% url 'reading-form' %}" class="btn btn-primary btn-lg">
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mt-6 md:mt-8">
+        <a href="{% url 'reading-form' %}" class="btn btn-primary">
           Draw Your Reading
         </a>
-        <a href="{% url 'reading-form' %}?natal=1" class="btn btn-outline btn-accent btn-lg">
+        <a href="{% url 'reading-form' %}?natal=1" class="btn btn-outline btn-accent">
           Natal Reading
         </a>
       </div>
-      <div class="grid grid-cols-3 gap-4 mt-16 text-sm text-base-content/60">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 md:mt-16 text-sm text-base-content/60">
         <div class="card bg-base-200 p-4">
           <span class="text-2xl text-accent">☉</span>
           <span class="font-bold mt-2">Daily Spread</span>
