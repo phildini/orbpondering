@@ -86,10 +86,12 @@ def _reading_to_dict(reading: TarotReading) -> dict:
                 "transit_body": a.transit_body,
                 "separation": a.separation,
                 "aspect_type": a.aspect_type.value,
-                "orb": a.orb,
+                "orb": round(a.orb, 1),
             }
-            for a in reading.aspects
+            for a in reading.aspects if a.orb <= 3
         ]
+        loose = sum(1 for a in reading.aspects if a.orb > 3)
+        result["aspects_loose_count"] = loose
 
     return result
 

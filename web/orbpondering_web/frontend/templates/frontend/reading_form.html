@@ -6,10 +6,13 @@
   <h1 class="text-3xl font-bold text-primary mb-2">New Reading</h1>
   <p class="text-base-content/70 mb-8">Set your date and location to seed the astrological draw.</p>
 
+  <div id="restore-notice" class="hidden text-xs text-accent mb-2"></div>
+
   <form hx-post="{% url 'reading-form' %}"
         hx-target="#reading-content"
         hx-swap="outerHTML"
-         class="card bg-base-200 p-4 md:p-6 space-y-4">
+        hx-on::before-request="saveFormData()"
+        class="card bg-base-200 p-4 md:p-6 space-y-4">
 
     <div class="form-control">
       <label class="label"><span class="label-text">Date</span></label>
@@ -66,29 +69,30 @@
     <details class="collapse collapse-arrow bg-base-300">
       <summary class="collapse-title text-sm font-medium text-accent">Natal Chart Mode (optional)</summary>
       <div class="collapse-content space-y-3 pt-3">
+        <div id="natal-restore-notice" class="hidden text-xs text-info mb-1">📅 Natal data restored from saved info</div>
         <div class="grid grid-cols-2 gap-4">
           <div class="form-control">
             <label class="label"><span class="label-text">Birth Date</span></label>
-            <input type="date" name="birth_date" class="input input-bordered w-full">
+            <input type="date" name="birth_date" id="birth-date" class="input input-bordered w-full">
           </div>
           <div class="form-control">
             <label class="label"><span class="label-text">Birth Time</span></label>
-            <input type="time" name="birth_time" class="input input-bordered w-full">
+            <input type="time" name="birth_time" id="birth-time" class="input input-bordered w-full">
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="form-control">
             <label class="label"><span class="label-text">Birth Latitude</span></label>
-            <input type="number" step="any" name="birth_lat" value="0.0" class="input input-bordered w-full">
+            <input type="number" step="any" name="birth_lat" id="birth-lat" value="0.0" class="input input-bordered w-full">
           </div>
           <div class="form-control">
             <label class="label"><span class="label-text">Birth Longitude</span></label>
-            <input type="number" step="any" name="birth_lon" value="0.0" class="input input-bordered w-full">
+            <input type="number" step="any" name="birth_lon" id="birth-lon" value="0.0" class="input input-bordered w-full">
           </div>
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Time Zone</span></label>
-          <input type="text" name="birth_tz" placeholder="America/New_York" class="input input-bordered w-full">
+          <input type="text" name="birth_tz" id="birth-tz" placeholder="America/New_York" class="input input-bordered w-full">
         </div>
       </div>
     </details>
@@ -107,6 +111,84 @@
 
 {% block extra_js %}
 <script>
+// ---- localStorage helpers ----
+
+function getVal(id) { return document.getElementById(id).value; }
+function setVal(id, v) { document.getElementById(id).value = v; }
+
+function saveFormData() {
+  var loc = { lat: getVal('lat-input'), lon: getVal('lon-input') };
+  localStorage.setItem('orbpondering_location', JSON.stringify(loc));
+
+  var natal = {
+    birth_date: getVal('birth-date'),
+    birth_time: getVal('birth-time'),
+    birth_lat: getVal('birth-lat'),
+    birth_lon: getVal('birth-lon'),
+    birth_tz: getVal('birth-tz'),
+  };
+  if (natal.birth_date) {
+    localStorage.setItem('orbpondering_natal', JSON.stringify(natal));
+  }
+
+  var prefs = {
+    house_system: document.querySelector('[name=house_system]').value,
+    spread: document.querySelector('[name=spread]').value,
+    reversed: document.querySelector('[name=reversed]').checked,
+  };
+  localStorage.setItem('orbpondering_prefs', JSON.stringify(prefs));
+}
+
+function loadStoredData() {
+  var notice = document.getElementById('restore-notice');
+  var parts = [];
+
+  // Location
+  try {
+    var loc = JSON.parse(localStorage.getItem('orbpondering_location'));
+    if (loc && loc.lat && loc.lat !== '0' && getVal('lat-input') === '0') {
+      setVal('lat-input', loc.lat);
+      setVal('lon-input', loc.lon);
+      parts.push('\ud83d\udccd location');
+    }
+  } catch(e) {}
+
+  // Natal
+  try {
+    var natal = JSON.parse(localStorage.getItem('orbpondering_natal'));
+    if (natal && natal.birth_date) {
+      var hadNatal = false;
+      if (natal.birth_date) { setVal('birth-date', natal.birth_date); hadNatal = true; }
+      if (natal.birth_time) { setVal('birth-time', natal.birth_time); }
+      if (natal.birth_lat && natal.birth_lat !== '0') { setVal('birth-lat', natal.birth_lat); }
+      if (natal.birth_lon && natal.birth_lon !== '0') { setVal('birth-lon', natal.birth_lon); }
+      if (natal.birth_tz) { setVal('birth-tz', natal.birth_tz); }
+      if (hadNatal) {
+        parts.push('\ud83d\udcc5 natal data');
+        var nr = document.getElementById('natal-restore-notice');
+        if (nr) nr.classList.remove('hidden');
+      }
+    }
+  } catch(e) {}
+
+  // Prefs
+  try {
+    var prefs = JSON.parse(localStorage.getItem('orbpondering_prefs'));
+    if (prefs) {
+      if (prefs.house_system) document.querySelector('[name=house_system]').value = prefs.house_system;
+      if (prefs.spread) document.querySelector('[name=spread]').value = prefs.spread;
+      if (prefs.reversed) document.querySelector('[name=reversed]').checked = prefs.reversed;
+    }
+  } catch(e) {}
+
+  if (parts.length) {
+    notice.textContent = '\u21ba Restored: ' + parts.join(' \u00b7 ');
+    notice.classList.remove('hidden');
+  }
+}
+
+// ---- Geolocation ----
+
 function getLocation() {
   var btn = document.getElementById('locate-btn');
   var status = document.getElementById('locate-status');
@@ -124,9 +206,16 @@ function getLocation() {
 
   navigator.geolocation.getCurrentPosition(
     function(pos) {
-      document.getElementById('lat-input').value = pos.coords.latitude.toFixed(4);
-      document.getElementById('lon-input').value = pos.coords.longitude.toFixed(4);
+      var lat = pos.coords.latitude.toFixed(4);
+      var lon = pos.coords.longitude.toFixed(4);
       var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      setVal('lat-input', lat);
+      setVal('lon-input', lon);
+      // Save to localStorage immediately
+      localStorage.setItem('orbpondering_location', JSON.stringify({lat: lat, lon: lon}));
+      if (tz && tz !== 'UTC') {
+        localStorage.setItem('orbpondering_location_tz', tz);
+      }
       status.textContent = '\ud83d\udccd ' + pos.coords.latitude.toFixed(2) + ', ' + pos.coords.longitude.toFixed(2) + ' \u00b7 ' + tz;
       status.className = 'text-xs text-success ml-2 self-center';
       btn.disabled = false;
@@ -143,5 +232,8 @@ function getLocation() {
     { enableHighAccuracy: false, timeout: 10000 }
   );
 }
+
+// Auto-restore on page load
+document.addEventListener('DOMContentLoaded', loadStoredData);
 </script>
 {% endblock %}

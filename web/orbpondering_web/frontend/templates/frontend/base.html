@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orbpondering — {% block title %}Tarot &amp; Astrology{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
   <link href="{% static 'css/output.css' %}" rel="stylesheet">
   <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js" crossorigin="anonymous"></script>
   <meta name="htmx-config" content='{"selfRequestsOnly": false}'>
@@ -11,8 +12,9 @@
 <body class="min-h-screen bg-base-300">
   <div class="navbar bg-base-100 border-b border-secondary/20">
     <div class="flex-1">
-      <a href="{% url 'index' %}" class="btn btn-ghost text-xl text-primary">
-        ✦ Orbpondering
+      <a href="{% url 'index' %}" class="btn btn-ghost text-xl text-primary gap-2">
+        <img src="{% static 'img/logo.png' %}" alt="Orbpondering" class="w-7 h-7 rounded">
+        Orbpondering
       </a>
     </div>
     <div class="flex-none gap-2">

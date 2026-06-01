@@ -161,14 +161,20 @@ def _build_reading_context(reading):
         }
 
     if reading.aspects:
-        ctx["reading"]["aspects"] = [
-            {
+        tight = []
+        loose_count = 0
+        for a in reading.aspects:
+            entry = {
                 "natal_body": a.natal_body,
                 "transit_body": a.transit_body,
                 "aspect_type": a.aspect_type.value,
                 "orb": round(a.orb, 1),
             }
-            for a in reading.aspects
-        ]
+            if a.orb <= 3:
+                tight.append(entry)
+            else:
+                loose_count += 1
+        ctx["reading"]["aspects"] = tight
+        ctx["reading"]["aspects_loose_count"] = loose_count
 
     return ctx

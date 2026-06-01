@@ -104,7 +104,10 @@
   {% if r.aspects %}
   <div class="card bg-base-200">
     <div class="card-body">
-      <h3 class="card-title text-warning">Aspects</h3>
+      <h3 class="card-title text-warning">Notable Aspects</h3>
+      <p class="text-xs text-base-content/50 mb-2">Tightest aspects between your natal and transit charts (orb ≤ 3°)
+        {% if r.aspects_loose_count %} · {{ r.aspects_loose_count }} additional wider aspects not shown{% endif %}
+      </p>
       <div class="overflow-x-auto">
         <table class="table table-zebra table-sm">
           <thead>
@@ -115,7 +118,7 @@
             <tr>
               <td>{{ a.natal_body|title }}</td>
               <td>{{ a.transit_body|title }}</td>
-              <td>{{ a.aspect_type|title }}</td>
+              <td><span class="badge badge-sm badge-outline">{{ a.aspect_type|title }}</span></td>
               <td>{{ a.orb|floatformat:1 }}°</td>
             </tr>
             {% endfor %}
