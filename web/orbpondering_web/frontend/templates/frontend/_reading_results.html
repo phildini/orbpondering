@@ -12,7 +12,12 @@
   <!-- Header -->
   <div class="text-center">
     <h1 class="text-xl md:text-3xl font-bold text-primary">{{ r.spread.name }}</h1>
-    <p class="text-base-content/70">{{ r.date }} · Seed: <code class="text-accent">{{ r.seed|stringformat:"x"|truncatechars:16 }}</code></p>
+    <p class="text-base-content/70">{{ r.date }} · Seed:
+      <span class="tooltip cursor-help" data-tip="A SHA-256 hash of today's planetary positions. This determines which cards are drawn deterministically — same planets, same cards.">
+        <code class="text-accent">{{ r.seed|stringformat:"x"|truncatechars:16 }}</code>
+        <sup class="text-xs opacity-60">ⓘ</sup>
+      </span>
+    </p>
   </div>
 
   <!-- Cards -->
@@ -42,7 +47,10 @@
         </div>
         {% endif %}
         <div class="mt-2 text-xs text-base-content/40">
-          House {{ pos.house_number|default:"—" }}
+          <span class="tooltip cursor-help" data-tip="The astrological house this card landed in. Each house governs a different area of life (see glossary).">
+            House {{ pos.house_number|default:"—" }}
+            <sup class="text-xs opacity-60">ⓘ</sup>
+          </span>
         </div>
       </div>
     </div>
@@ -53,7 +61,12 @@
   {% if r.chart %}
   <div class="card bg-base-200">
     <div class="card-body">
-      <h3 class="card-title text-accent">Planetary Positions</h3>
+      <h3 class="card-title text-accent">
+        <span class="tooltip cursor-help" data-tip="Where each planet is sitting in the zodiac right now. Every planet represents a different part of your personality and life.">
+          Planetary Positions
+          <sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
+      </h3>
       <div class="overflow-x-auto">
         <table class="table table-zebra table-sm">
           <thead>
@@ -62,12 +75,16 @@
               <th>Position</th>
               <th>Sign</th>
               <th>Element</th>
+              <th>Modality</th>
             </tr>
           </thead>
           <tbody>
             {% for name, p in r.chart.planets.items %}
             <tr>
-              <td class="font-medium">{{ name|title }}</td>
+              <td class="font-medium cursor-help" title="{{ p.meaning }}">
+                {{ name|title }}
+                <sup class="text-xs opacity-60">ⓘ</sup>
+              </td>
               <td>{{ p.degree|floatformat:1 }}°</td>
               <td>{{ p.sign_symbol }} {{ p.sign }}</td>
               <td>
@@ -77,24 +94,78 @@
                   {{ p.element|title }}
                 </span>
               </td>
+              <td>
+                <span class="inline-flex items-center gap-1 badge badge-sm badge-outline
+                  {% if p.modality == 'cardinal' %}badge-primary{% elif p.modality == 'fixed' %}badge-secondary{% elif p.modality == 'mutable' %}badge-accent{% endif %}">
+                  {{ p.modality|title }}
+                </span>
+              </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
       <p class="text-xs text-base-content/50 mt-2">
-        Asc: {{ r.chart.ascendant|floatformat:1 }}° · MC: {{ r.chart.midheaven|floatformat:1 }}°
-        · Dominant: <span class="{% if r.chart.dominant_element == 'fire' %}text-error{% elif r.chart.dominant_element == 'water' %}text-info{% elif r.chart.dominant_element == 'air' %}text-warning{% elif r.chart.dominant_element == 'earth' %}text-success{% endif %}">{{ r.chart.dominant_element|title }}</span>
+        <span class="tooltip cursor-help" data-tip="The zodiac sign that was rising on the eastern horizon at your selected date and location. Represents your outward personality and approach to life.">
+          Asc: {{ r.chart.ascendant|floatformat:1 }}°<sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
+        ·
+        <span class="tooltip cursor-help" data-tip="The Midheaven — the highest point in the sky at your location. Represents your career, public image, and life direction.">
+          MC: {{ r.chart.midheaven|floatformat:1 }}°<sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
+        ·
+        <span class="tooltip cursor-help" data-tip="The element with the most planetary emphasis today, suggesting what kind of energy dominates.">
+          Dominant:
+          <span class="{% if r.chart.dominant_element == 'fire' %}text-error{% elif r.chart.dominant_element == 'water' %}text-info{% elif r.chart.dominant_element == 'air' %}text-warning{% elif r.chart.dominant_element == 'earth' %}text-success{% endif %}">{{ r.chart.dominant_element|title }}</span>
+          <sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
       </p>
     </div>
   </div>
+
+  <!-- Planet glossary -->
+  <details class="collapse collapse-arrow bg-base-200">
+    <summary class="collapse-title text-sm font-medium text-accent">What do these planets mean?</summary>
+    <div class="collapse-content text-xs space-y-1 pt-2">
+      <p class="text-base-content/60 mb-2">In astrology, each planet represents a different part of your psyche and life experience. Their positions in the zodiac signs color how that energy expresses itself.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+        <div><span class="font-medium">☉ Sun</span> — Identity, ego, life force</div>
+        <div><span class="font-medium">☽ Moon</span> — Emotions, intuition, habits</div>
+        <div><span class="font-medium">☿ Mercury</span> — Communication, thinking, travel</div>
+        <div><span class="font-medium">♀ Venus</span> — Love, beauty, values, money</div>
+        <div><span class="font-medium">♂ Mars</span> — Action, drive, desire, ambition</div>
+        <div><span class="font-medium">♃ Jupiter</span> — Expansion, luck, wisdom</div>
+        <div><span class="font-medium">♄ Saturn</span> — Structure, discipline, lessons</div>
+        <div><span class="font-medium">♅ Uranus</span> — Change, innovation, rebellion</div>
+        <div><span class="font-medium">♆ Neptune</span> — Dreams, illusion, spirituality</div>
+        <div><span class="font-medium">♇ Pluto</span> — Transformation, power, depth</div>
+      </div>
+      <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-2 border-t border-base-300">
+        <div><span class="font-medium">Cardinal</span> — Initiating, leadership, beginnings <span class="badge badge-primary badge-xs ml-1">Cardinal</span></div>
+        <div><span class="font-medium">Fixed</span> — Stabilizing, persistence, resistance <span class="badge badge-secondary badge-xs ml-1">Fixed</span></div>
+        <div><span class="font-medium">Mutable</span> — Adapting, flexibility, change <span class="badge badge-accent badge-xs ml-1">Mutable</span></div>
+      </div>
+      <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-2 border-t border-base-300">
+        <div><span class="font-medium">🔥 Fire</span> — Action, energy, passion <span class="badge badge-error badge-xs ml-1">Fire</span></div>
+        <div><span class="font-medium">💧 Water</span> — Emotion, intuition, depth <span class="badge badge-info badge-xs ml-1">Water</span></div>
+        <div><span class="font-medium">💨 Air</span> — Thought, communication, ideas <span class="badge badge-warning badge-xs ml-1">Air</span></div>
+        <div><span class="font-medium">🌍 Earth</span> — Practicality, stability, matter <span class="badge badge-success badge-xs ml-1">Earth</span></div>
+      </div>
+    </div>
+  </details>
+
   {% endif %}
 
   <!-- Natal Chart -->
   {% if r.natal_chart %}
   <div class="card bg-base-200">
     <div class="card-body">
-      <h3 class="card-title text-secondary">Natal Chart · {{ r.natal_chart.birth_date }}</h3>
+      <h3 class="card-title text-secondary">
+        <span class="tooltip cursor-help" data-tip="Your birth chart — where the planets were at the moment you were born. The natal chart reveals your innate personality and life patterns.">
+          Natal Chart · {{ r.natal_chart.birth_date }}
+          <sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
+      </h3>
       <p class="text-xs text-base-content/50">Natal planetary positions at your birth.</p>
     </div>
   </div>
@@ -104,30 +175,81 @@
   {% if r.aspects %}
   <div class="card bg-base-200">
     <div class="card-body">
-      <h3 class="card-title text-warning">Notable Aspects</h3>
+      <h3 class="card-title text-warning">
+        <span class="tooltip cursor-help" data-tip="Angular relationships between your natal planets (at birth) and today's transit planets. Aspects show how current planetary energies interact with your core self.">
+          Notable Aspects
+          <sup class="text-xs opacity-60">ⓘ</sup>
+        </span>
+      </h3>
       <p class="text-xs text-base-content/50 mb-2">Tightest aspects between your natal and transit charts (orb ≤ 3°)
         {% if r.aspects_loose_count %} · {{ r.aspects_loose_count }} additional wider aspects not shown{% endif %}
       </p>
       <div class="overflow-x-auto">
         <table class="table table-zebra table-sm">
           <thead>
-            <tr><th>Natal</th><th>Transit</th><th>Aspect</th><th>Orb</th></tr>
+            <tr>
+              <th>Natal</th>
+              <th>Transit</th>
+              <th class="cursor-help" title="The type of angular relationship. Conjunction (0°) = merged energies, Sextile (60°) = opportunity, Square (90°) = tension, Trine (120°) = harmony, Opposition (180°) = polarity.">
+                Aspect<sup class="text-xs opacity-60">ⓘ</sup>
+              </th>
+              <th class="cursor-help" title="How close the aspect is to being exact. Smaller orb = stronger influence.">
+                Orb<sup class="text-xs opacity-60">ⓘ</sup>
+              </th>
+            </tr>
           </thead>
           <tbody>
             {% for a in r.aspects %}
             <tr>
-              <td>{{ a.natal_body|title }}</td>
-              <td>{{ a.transit_body|title }}</td>
-              <td><span class="badge badge-sm badge-outline">{{ a.aspect_type|title }}</span></td>
+              <td class="font-medium">{{ a.natal_body|title }}</td>
+              <td class="font-medium">{{ a.transit_body|title }}</td>
+              <td>
+                <span class="cursor-help badge badge-sm badge-outline
+                  {% if a.aspect_type == 'conjunction' %}badge-primary{% elif a.aspect_type == 'sextile' %}badge-info{% elif a.aspect_type == 'square' %}badge-warning{% elif a.aspect_type == 'trine' %}badge-success{% elif a.aspect_type == 'opposition' %}badge-error{% endif %}"
+                  title="{% if a.aspect_type == 'conjunction' %}Conjunction (0°) — Planets merge their energies, intense and focused.{% elif a.aspect_type == 'sextile' %}Sextile (60°) — Opportunity flows easily, supportive but requires action.{% elif a.aspect_type == 'square' %}Square (90°) — Tension that drives growth, challenging but motivating.{% elif a.aspect_type == 'trine' %}Trine (120°) — Natural harmony, talents flow effortlessly.{% elif a.aspect_type == 'opposition' %}Opposition (180°) — Polarity and awareness, balancing opposing forces.{% endif %}">
+                  {{ a.aspect_type|title }}
+                </span>
+              </td>
               <td>{{ a.orb|floatformat:1 }}°</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
+
+      <!-- Aspect cheat sheet -->
+      <details class="collapse collapse-arrow bg-base-300 mt-2">
+        <summary class="collapse-title text-xs font-medium text-base-content/70">Aspect key</summary>
+        <div class="collapse-content">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs pt-1">
+            <div><span class="badge badge-primary badge-xs">Conjunction</span> 0° — Energies merge, intense focus</div>
+            <div><span class="badge badge-info badge-xs">Sextile</span> 60° — Easy opportunity, flow</div>
+            <div><span class="badge badge-warning badge-xs">Square</span> 90° — Tension, challenge, growth</div>
+            <div><span class="badge badge-success badge-xs">Trine</span> 120° — Natural harmony, talent</div>
+            <div><span class="badge badge-error badge-xs">Opposition</span> 180° — Polarity, balance, awareness</div>
+          </div>
+        </div>
+      </details>
+
     </div>
   </div>
   {% endif %}
+
+  <!-- Learn more -->
+  <details class="collapse collapse-arrow bg-base-200">
+    <summary class="collapse-title text-sm font-medium text-accent">Learn more about astrology</summary>
+    <div class="collapse-content text-xs space-y-2 pt-2">
+      <p class="text-base-content/60">These links explain the astrological concepts used in your reading:</p>
+      <ul class="list-disc list-inside space-y-1">
+        <li><a href="https://en.wikipedia.org/wiki/Planets_in_astrology" target="_blank" rel="noopener" class="link link-accent">Planets in astrology</a> — What each planet represents</li>
+        <li><a href="https://en.wikipedia.org/wiki/Zodiac" target="_blank" rel="noopener" class="link link-accent">Zodiac signs</a> — The 12 signs and their meanings</li>
+        <li><a href="https://en.wikipedia.org/wiki/Astrological_aspect" target="_blank" rel="noopener" class="link link-accent">Astrological aspects</a> — How planets interact</li>
+        <li><a href="https://en.wikipedia.org/wiki/Domicile_(astrology)" target="_blank" rel="noopener" class="link link-accent">Astrological houses</a> — The 12 areas of life</li>
+        <li><a href="https://en.wikipedia.org/wiki/Astrological_sign#Modality" target="_blank" rel="noopener" class="link link-accent">Modality (cardinal, fixed, mutable)</a> — Signs' modes of operation</li>
+        <li><a href="https://en.wikipedia.org/wiki/Ascendant" target="_blank" rel="noopener" class="link link-accent">Ascendant and Midheaven</a> — The angles of your chart</li>
+      </ul>
+    </div>
+  </details>
 
   <div class="text-center">
     <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent">New Reading</a>

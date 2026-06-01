@@ -7,6 +7,19 @@ from orbpondering.constants import HouseSystem
 from orbpondering.draw import birth_tarot_draw, tarot_draw_for_date
 from orbpondering.models import BirthData
 
+PLANET_MEANINGS = {
+    "sun": "Core identity, ego, life force, vitality",
+    "moon": "Emotions, intuition, subconscious, habits",
+    "mercury": "Communication, thinking, travel, intellect",
+    "venus": "Love, beauty, values, relationships, money",
+    "mars": "Action, drive, desire, ambition, aggression",
+    "jupiter": "Expansion, luck, wisdom, growth, optimism",
+    "saturn": "Structure, discipline, responsibility, lessons, time",
+    "uranus": "Change, innovation, rebellion, breakthroughs, freedom",
+    "neptune": "Dreams, illusion, spirituality, intuition, confusion",
+    "pluto": "Transformation, power, rebirth, depth, the unconscious",
+}
+
 
 def _position_context(pos):
     """Convert a CardPosition to template-friendly dict."""
@@ -145,7 +158,9 @@ def _build_reading_context(reading):
                 "sign": ppos.zodiac_sign.full_name,
                 "sign_symbol": ppos.zodiac_sign.symbol,
                 "element": ppos.zodiac_sign.element,
+                "modality": ppos.zodiac_sign.modality,
                 "degree": round(ppos.longitude % 30, 1),
+                "meaning": PLANET_MEANINGS.get(body, ""),
             }
         ctx["reading"]["chart"] = {
             "date": chart.date.isoformat(),

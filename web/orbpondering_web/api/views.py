@@ -11,6 +11,19 @@ from rest_framework.response import Response
 
 from .serializers import NatalReadingRequestSerializer, ReadingRequestSerializer
 
+PLANET_MEANINGS = {
+    "sun": "Core identity, ego, life force, vitality",
+    "moon": "Emotions, intuition, subconscious, habits",
+    "mercury": "Communication, thinking, travel, intellect",
+    "venus": "Love, beauty, values, relationships, money",
+    "mars": "Action, drive, desire, ambition, aggression",
+    "jupiter": "Expansion, luck, wisdom, growth, optimism",
+    "saturn": "Structure, discipline, responsibility, lessons, time",
+    "uranus": "Change, innovation, rebellion, breakthroughs, freedom",
+    "neptune": "Dreams, illusion, spirituality, intuition, confusion",
+    "pluto": "Transformation, power, rebirth, depth, the unconscious",
+}
+
 
 def _reading_to_dict(reading: TarotReading) -> dict:
     """Convert a TarotReading dataclass to a JSON-safe dict."""
@@ -57,7 +70,9 @@ def _reading_to_dict(reading: TarotReading) -> dict:
                 "sign": ppos.zodiac_sign.full_name,
                 "sign_symbol": ppos.zodiac_sign.symbol,
                 "element": ppos.zodiac_sign.element,
+                "modality": ppos.zodiac_sign.modality,
                 "degree": ppos.longitude % 30,
+                "meaning": PLANET_MEANINGS.get(body, ""),
             }
         result["chart"] = {
             "date": chart.date.isoformat(),
