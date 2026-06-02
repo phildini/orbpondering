@@ -1,15 +1,12 @@
 """Service layer for orbpondering with validation and persistence."""
 
 import json
-import os
-from dataclasses import asdict
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
-from typing import Optional
 
-from orbpondering.models import Chart, TarotReading
 from orbpondering.constants import HouseSystem
-from orbpondering.draw import compute_chart, daily_tarot_draw
+from orbpondering.draw import compute_chart
+from orbpondering.models import Chart, TarotReading
 
 
 def validate_chart(chart: Chart) -> bool:
@@ -183,15 +180,12 @@ def save_reading(reading: TarotReading, reading_path: str = None) -> None:
         json.dump(reading_dict, f, indent=2)
 
 
-def load_reading(date: date, seed: int) -> Optional[TarotReading]:
+def load_reading(date: date, seed: int) -> TarotReading | None:
     """Load a tarot reading from JSON file."""
     reading_path = get_readings_dir() / f"{date.isoformat()}_{seed}.json"
 
     if not reading_path.exists():
         return None
-
-    with open(reading_path, "r") as f:
-        reading_data = json.load(f)
 
     # Note: This is a simplified version. In practice, we'd need to reconstruct
     # the dataclass objects from the JSON data.

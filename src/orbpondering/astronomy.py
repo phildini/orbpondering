@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, time
-from zoneinfo import ZoneInfo
+from datetime import date, datetime
 
-from astropy import units as u
-from astropy.coordinates import EarthLocation, get_body, get_sun, solar_system_ephemeris
-from astropy.time import Time
 import numpy as np
+from astropy import units as u
+from astropy.coordinates import get_body, get_sun, solar_system_ephemeris
+from astropy.time import Time
 
-from orbpondering.utils import _normalize, zodiac_sign_for_degree
-
+from orbpondering.utils import _normalize
 
 solar_system_ephemeris.set("jpl")
 

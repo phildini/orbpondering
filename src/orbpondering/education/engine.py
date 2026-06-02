@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 from datetime import date
 
 from rich.console import Console
@@ -20,6 +19,7 @@ from orbpondering.education.steps import (
     step_seed_generation,
     step_sidereal_time,
 )
+from orbpondering.models import BirthData
 
 
 def run_education(

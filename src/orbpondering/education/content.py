@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from orbpondering.constants import ZodiacSign
+    pass
 
 
 HOUSE_MEANINGS = {

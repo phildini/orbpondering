@@ -10,7 +10,6 @@ from orbpondering.utils import zodiac_sign_for_degree
 if TYPE_CHECKING:
     from orbpondering.models import TarotReading
 
-import io as _io
 
 
 def _get_suit_symbol(suit: Suit | None) -> str:

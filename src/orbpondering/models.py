@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, time
+from datetime import date, time
 from functools import cached_property
 from typing import TYPE_CHECKING
 
