@@ -31,6 +31,20 @@
                class="input input-bordered w-full">
       </div>
     </div>
+
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Or search city / ZIP</span>
+        <span class="label-text-alt text-xs text-base-content/50">via OpenStreetMap</span>
+      </label>
+      <div class="flex gap-2">
+        <input type="text" id="city-search" placeholder="New York, 10001, London..."
+               class="input input-bordered w-full">
+        <button type="button" class="btn btn-accent btn-sm" onclick="searchCity()">Search</button>
+      </div>
+      <div id="city-results" class="mt-1 space-y-1"></div>
+    </div>
+
     <div class="flex justify-end">
       <button type="button" id="locate-btn" class="btn btn-outline btn-accent btn-xs gap-1"
               onclick="getLocation()">
@@ -89,6 +103,15 @@
             <label class="label"><span class="label-text">Birth Longitude</span></label>
             <input type="number" step="any" name="birth_lon" id="birth-lon" value="0.0" class="input input-bordered w-full">
           </div>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Or search birth city / ZIP</span></label>
+          <div class="flex gap-2">
+            <input type="text" id="birth-city-search" placeholder="New York, 10001..."
+                   class="input input-bordered w-full">
+            <button type="button" class="btn btn-accent btn-sm" onclick="searchBirthCity()">Search</button>
+          </div>
+          <div id="birth-city-results" class="mt-1 space-y-1"></div>
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Time Zone</span></label>
@@ -178,6 +201,7 @@ function loadStoredData() {
       if (prefs.house_system) document.querySelector('[name=house_system]').value = prefs.house_system;
       if (prefs.spread) document.querySelector('[name=spread]').value = prefs.spread;
       if (prefs.reversed) document.querySelector('[name=reversed]').checked = prefs.reversed;
+      parts.push('\u2699\ufe0f prefs');
     }
   } catch(e) {}
 
@@ -186,6 +210,71 @@ function loadStoredData() {
     notice.classList.remove('hidden');
   }
 }
+
+// ---- City / ZIP search ----
+
+function _searchCity(query, resultsId, latId, lonId) {
+  if (!query || query.length < 2) return;
+  var resultsEl = document.getElementById(resultsId);
+  resultsEl.innerHTML = '<span class="text-xs text-warning">Searching...</span>';
+
+  fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query) + '&format=json&limit=5&addressdetails=0')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      resultsEl.innerHTML = '';
+      if (!data || data.length === 0) {
+        resultsEl.innerHTML = '<span class="text-xs text-error">No results found</span>';
+        return;
+      }
+      data.forEach(function(place) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-ghost btn-xs w-full text-left justify-start font-normal text-xs';
+        btn.textContent = place.display_name;
+        btn.onclick = function() {
+          document.getElementById(latId).value = parseFloat(place.lat).toFixed(4);
+          document.getElementById(lonId).value = parseFloat(place.lon).toFixed(4);
+          resultsEl.innerHTML = '<span class="text-xs text-success">\u2713 ' + place.display_name.slice(0, 60) + '...</span>';
+          // Save immediately
+          saveFormData();
+        };
+        resultsEl.appendChild(btn);
+      });
+    })
+    .catch(function(err) {
+      resultsEl.innerHTML = '<span class="text-xs text-error">Search failed: ' + err.message + '</span>';
+    });
+}
+
+function searchCity() {
+  _searchCity(
+    document.getElementById('city-search').value.trim(),
+    'city-results', 'lat-input', 'lon-input'
+  );
+}
+
+function searchBirthCity() {
+  _searchCity(
+    document.getElementById('birth-city-search').value.trim(),
+    'birth-city-results', 'birth-lat', 'birth-lon'
+  );
+}
+
+// Enter key triggers search; auto-save prefs on change
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('city-search');
+  if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); searchCity(); } });
+  var el2 = document.getElementById('birth-city-search');
+  if (el2) el2.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); searchBirthCity(); } });
+
+  // Save prefs immediately when changed
+  var hs = document.querySelector('[name=house_system]');
+  if (hs) hs.addEventListener('change', saveFormData);
+  var sp = document.querySelector('[name=spread]');
+  if (sp) sp.addEventListener('change', saveFormData);
+  var rv = document.querySelector('[name=reversed]');
+  if (rv) rv.addEventListener('change', saveFormData);
+});
 
 // ---- Geolocation ----
 
