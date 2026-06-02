@@ -169,7 +169,7 @@ function loadStoredData() {
   // Location
   try {
     var loc = JSON.parse(localStorage.getItem('orbpondering_location'));
-    if (loc && loc.lat && loc.lat !== '0' && getVal('lat-input') === '0') {
+    if (loc && loc.lat && parseFloat(loc.lat) !== 0 && parseFloat(getVal('lat-input')) === 0) {
       setVal('lat-input', loc.lat);
       setVal('lon-input', loc.lon);
       parts.push('\ud83d\udccd location');
@@ -183,8 +183,8 @@ function loadStoredData() {
       var hadNatal = false;
       if (natal.birth_date) { setVal('birth-date', natal.birth_date); hadNatal = true; }
       if (natal.birth_time) { setVal('birth-time', natal.birth_time); }
-      if (natal.birth_lat && natal.birth_lat !== '0') { setVal('birth-lat', natal.birth_lat); }
-      if (natal.birth_lon && natal.birth_lon !== '0') { setVal('birth-lon', natal.birth_lon); }
+      if (natal.birth_lat && parseFloat(natal.birth_lat) !== 0) { setVal('birth-lat', natal.birth_lat); }
+      if (natal.birth_lon && parseFloat(natal.birth_lon) !== 0) { setVal('birth-lon', natal.birth_lon); }
       if (natal.birth_tz) { setVal('birth-tz', natal.birth_tz); }
       if (hadNatal) {
         parts.push('\ud83d\udcc5 natal data');
