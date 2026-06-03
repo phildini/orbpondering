@@ -9,6 +9,8 @@ dependencies = [
     "django-cors-headers>=4.0",
     "whitenoise>=6.0",
     "gunicorn>=22.0",
+    "django-stagedoor",
+    "django-anymail>=12.0",
     "orbpondering",
 ]
 

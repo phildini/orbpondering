@@ -21,6 +21,11 @@
       <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent btn-sm">
         New Reading
       </a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'stagedoor:logout' %}" class="btn btn-ghost btn-sm text-base-content/60">Logout</a>
+      {% else %}
+      <a href="{% url 'stagedoor:login' %}" class="btn btn-ghost btn-sm text-base-content/60">Login</a>
+      {% endif %}
     </div>
   </div>
 

@@ -19,10 +19,16 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
+    "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.messages",
+    "django.contrib.sessions",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "anymail",
+    "stagedoor",
     "orbpondering_web.api",
     "orbpondering_web.frontend",
 ]
@@ -30,9 +36,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "orbpondering_web.api.auth.APIKeyMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 ROOT_URLCONF = "orbpondering_web.urls"
@@ -43,12 +52,43 @@ TEMPLATES = [
         "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
-            "context_processors": [],
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
         },
     },
 ]
 
 WSGI_APPLICATION = "orbpondering_web.wsgi.application"
+
+AUTHENTICATION_BACKENDS = [
+    "stagedoor.backends.EmailTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+SITE_ID = 1
+
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+STAGEDOOR_SITE_NAME = "Orbpondering"
+STAGEDOOR_DISABLE_USER_CREATION = True
+STAGEDOOR_LOGIN_REDIRECT = "/"
+STAGEDOOR_LOGOUT_REDIRECT = "/"
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
+    ANYMAIL = {
+        "POSTMARK_SERVER_TOKEN": os.environ.get("POSTMARK_SERVER_TOKEN", ""),
+    }
+    DEFAULT_FROM_EMAIL = os.environ.get(
+        "DEFAULT_FROM_EMAIL", "noreply@orbpondering.fly.dev"
+    )
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
