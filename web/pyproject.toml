@@ -20,6 +20,12 @@ package = true
 [tool.uv.sources]
 orbpondering = { path = "../" }
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-django>=4.0",
+]
+
 [project.scripts]
 build-css = "orbpondering_web.dev:build_css"
 watch-css = "orbpondering_web.dev:watch_css"
@@ -33,6 +39,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["orbpondering_web"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+DJANGO_SETTINGS_MODULE = "orbpondering_web.settings"
 
 [tool.ruff]
 target-version = "py312"
