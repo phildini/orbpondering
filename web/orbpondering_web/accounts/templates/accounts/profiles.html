@@ -1,0 +1,81 @@
+{% extends "frontend/base.html" %}
+{% block title %}Profiles{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold text-primary mb-2">Saved Profiles</h1>
+  <p class="text-base-content/70 mb-8">Create named location profiles to quickly switch between them.</p>
+
+  {% if profile_count == 0 and not must_upgrade %}
+  <div class="card bg-base-200 p-8 text-center">
+    <p class="text-base-content/70 mb-4">No profiles yet.</p>
+  </div>
+  {% endif %}
+
+  {% if profile_count < max_profiles %}
+  <details class="collapse collapse-arrow bg-base-200 mb-6">
+    <summary class="collapse-title text-sm font-medium text-accent">Add Profile</summary>
+    <div class="collapse-content">
+      <form method="post" action="{% url 'accounts-profiles' %}" class="space-y-3 pt-2">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        <div class="form-control">
+          <input type="text" name="name" placeholder="Profile name (e.g. Home, Work)" class="input input-bordered w-full" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Latitude</span></label>
+            <input type="number" step="any" name="lat" value="0.0" class="input input-bordered w-full">
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Longitude</span></label>
+            <input type="number" step="any" name="lon" value="0.0" class="input input-bordered w-full">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-control">
+            <select name="house_system" class="select select-bordered w-full">
+              <option value="whole_sign">Whole Sign</option>
+              <option value="equal">Equal</option>
+              <option value="porphyry">Porphyry</option>
+              <option value="placidus">Placidus</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <select name="spread" class="select select-bordered w-full">
+              <option value="daily">Daily</option>
+              <option value="three_card">Three Card</option>
+              <option value="celtic_cross">Celtic Cross</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Save Profile</button>
+      </form>
+    </div>
+  </details>
+  {% endif %}
+
+  <div class="space-y-4">
+    {% for p in profiles %}
+    <div class="card bg-base-200">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold">{{ p.name }}</h3>
+          <form method="post" action="{% url 'accounts-profiles' %}" onsubmit="return confirm('Delete this profile?')">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="{{ p.id }}">
+            <button type="submit" class="btn btn-ghost btn-xs text-error">✕</button>
+          </form>
+        </div>
+        <p class="text-xs text-base-content/60">{{ p.lat }}°, {{ p.lon }}° · {{ p.house_system }} · {{ p.spread }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-base-content/40">No profiles saved yet.</p>
+    {% endfor %}
+  </div>
+
+  <p class="text-xs text-base-content/50 mt-4">Profiles: {{ profile_count }} / {{ max_profiles }}</p>
+</div>
+{% endblock %}

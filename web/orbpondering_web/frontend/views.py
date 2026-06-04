@@ -53,7 +53,11 @@ def reading_view(request):
     today = date.today().isoformat()
 
     if request.method == "GET":
-        return render(request, "frontend/reading_form.html", {"today": today})
+        context = {"today": today}
+        if request.user.is_authenticated:
+            profile = request.user.orb_profile
+            context["profile"] = profile
+        return render(request, "frontend/reading_form.html", context)
 
     # POST — calculate reading
     try:
@@ -129,6 +133,28 @@ def reading_view(request):
 
     context = _build_reading_context(reading)
     context["today"] = today
+
+    # Save to user history if authenticated
+    if request.user.is_authenticated:
+        from orbpondering_web.accounts.models import ReadingHistory
+
+        ReadingHistory.objects.update_or_create(
+            user=request.user,
+            date=reading.date,
+            defaults={"reading_data": context.get("reading", {})},
+        )
+        # Update profile defaults
+        profile = request.user.orb_profile
+        profile.default_lat = lat
+        profile.default_lon = lon
+        try:
+            profile.default_house_system = house_system.value
+        except AttributeError:
+            profile.default_house_system = str(house_system)
+        profile.default_spread = spread
+        profile.reversed_cards = reversed_cards
+        profile.save()
+
     is_htmx = request.headers.get("HX-Request") == "true"
     template = "_reading_results.html" if is_htmx else "reading_result.html"
     return render(request, f"frontend/{template}", context)

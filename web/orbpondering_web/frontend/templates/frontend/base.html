@@ -17,14 +17,27 @@
         Orbpondering
       </a>
     </div>
-    <div class="flex-none gap-2">
+    <div class="flex-none gap-1">
       <a href="{% url 'reading-form' %}" class="btn btn-outline btn-accent btn-sm">
         New Reading
       </a>
       {% if user.is_authenticated %}
-      <a href="{% url 'stagedoor:logout' %}" class="btn btn-ghost btn-sm text-base-content/60">Logout</a>
+      <div class="dropdown dropdown-end">
+        <label tabindex="0" class="btn btn-ghost btn-sm avatar gap-1">
+          <span class="text-accent">●</span>
+          {{ user.email|truncatechars:20 }}
+        </label>
+        <ul tabindex="0" class="dropdown-content menu menu-sm bg-base-200 rounded-box shadow-lg p-2 w-52">
+          <li><a href="{% url 'accounts-dashboard' %}">📊 Dashboard</a></li>
+          <li><a href="{% url 'accounts-settings' %}">⚙️ Settings</a></li>
+          <li><a href="{% url 'accounts-profiles' %}">👤 Profiles</a></li>
+          <li><a href="{% url 'accounts-pricing' %}">💎 Pricing</a></li>
+          <li class="divider my-1"></li>
+          <li><a href="{% url 'stagedoor:logout' %}">🚪 Sign Out</a></li>
+        </ul>
+      </div>
       {% else %}
-      <a href="{% url 'stagedoor:login' %}" class="btn btn-ghost btn-sm text-base-content/60">Login</a>
+      <a href="{% url 'stagedoor:login' %}" class="btn btn-ghost btn-sm">Sign In</a>
       {% endif %}
     </div>
   </div>

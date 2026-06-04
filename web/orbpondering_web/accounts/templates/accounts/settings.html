@@ -1,0 +1,53 @@
+{% extends "frontend/base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <h1 class="text-2xl font-bold text-primary mb-2">Your Settings</h1>
+  <p class="text-base-content/70 mb-8">These defaults will pre-fill your reading form.</p>
+
+  <form method="post" action="{% url 'accounts-settings' %}" class="card bg-base-200 p-6 space-y-4">
+    {% csrf_token %}
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">Default Latitude</span></label>
+        <input type="number" step="any" name="lat" value="{{ profile.default_lat }}" class="input input-bordered w-full">
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">Default Longitude</span></label>
+        <input type="number" step="any" name="lon" value="{{ profile.default_lon }}" class="input input-bordered w-full">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text">House System</span></label>
+        <select name="house_system" class="select select-bordered w-full">
+          <option value="whole_sign" {% if profile.default_house_system == 'whole_sign' %}selected{% endif %}>Whole Sign</option>
+          <option value="equal" {% if profile.default_house_system == 'equal' %}selected{% endif %}>Equal</option>
+          <option value="porphyry" {% if profile.default_house_system == 'porphyry' %}selected{% endif %}>Porphyry</option>
+          <option value="placidus" {% if profile.default_house_system == 'placidus' %}selected{% endif %}>Placidus</option>
+        </select>
+      </div>
+      <div class="form-control">
+        <label class="label"><span class="label-text">Default Spread</span></label>
+        <select name="spread" class="select select-bordered w-full">
+          <option value="daily" {% if profile.default_spread == 'daily' %}selected{% endif %}>Daily</option>
+          <option value="three_card" {% if profile.default_spread == 'three_card' %}selected{% endif %}>Three Card</option>
+          <option value="celtic_cross" {% if profile.default_spread == 'celtic_cross' %}selected{% endif %}>Celtic Cross</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-control">
+      <label class="label cursor-pointer justify-start gap-4">
+        <input type="checkbox" name="reversed" class="checkbox checkbox-accent" {% if profile.reversed_cards %}checked{% endif %}>
+        <span class="label-text">Enable reversed cards</span>
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Save Settings</button>
+  </form>
+</div>
+{% endblock %}

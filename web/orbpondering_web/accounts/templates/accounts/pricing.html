@@ -1,0 +1,83 @@
+{% extends "frontend/base.html" %}
+{% block title %}Pricing{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold text-primary text-center mb-2">Choose Your Plan</h1>
+  <p class="text-base-content/70 text-center mb-10">Daily readings are always free. Upgrade for more.</p>
+
+  {% if must_upgrade %}
+  <div class="alert alert-info shadow-lg mb-8">
+    <span>Multi-profile support requires the Orb plan.</span>
+  </div>
+  {% endif %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+
+    <!-- Free -->
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <h2 class="card-title text-lg">Free</h2>
+        <p class="text-3xl font-bold">$0</p>
+        <p class="text-base-content/60 text-sm mb-4">forever</p>
+        <ul class="space-y-2 text-sm">
+          <li>✓ Daily tarot readings</li>
+          <li>✓ Full astrological chart</li>
+          <li>✓ Save your preferences</li>
+          <li>✓ 7-day reading history</li>
+          <li>✓ 7-day reading forecast</li>
+          <li class="text-base-content/40">— Multiple profiles</li>
+        </ul>
+        {% if user.is_authenticated %}
+        <div class="card-actions mt-6">
+          <span class="badge badge-accent badge-outline py-3 px-4">Current Plan</span>
+        </div>
+        {% else %}
+        <div class="card-actions mt-6">
+          <a href="{% url 'stagedoor:login' %}" class="btn btn-accent btn-block">Sign Up Free</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Orb -->
+    <div class="card bg-base-200 ring-2 ring-secondary">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <h2 class="card-title text-lg">Orb</h2>
+          <span class="badge badge-secondary badge-sm">Popular</span>
+        </div>
+        <p class="text-3xl font-bold">${{ price_dollars|floatformat:0 }}</p>
+        <p class="text-base-content/60 text-sm mb-4">per month</p>
+        <ul class="space-y-2 text-sm">
+          <li>✓ Everything in Free</li>
+          <li>✓ <strong>Multiple profiles</strong></li>
+          <li>✓ Up to 10 saved locations</li>
+          <li>✓ Priority support</li>
+        </ul>
+        <div class="card-actions mt-6">
+          {% if user.is_authenticated %}
+            {% if is_orb %}
+            <form method="post" action="{% url 'accounts-subscribe' %}" class="w-full">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="unsubscribe">
+              <button type="submit" class="btn btn-outline btn-block">Cancel Subscription</button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'accounts-subscribe' %}" class="w-full">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="subscribe">
+              <button type="submit" class="btn btn-secondary btn-block">Subscribe — ${{ price_dollars|floatformat:0 }}/mo</button>
+            </form>
+            <p class="text-xs text-base-content/40 text-center mt-2">Mock mode — no payment collected</p>
+            {% endif %}
+          {% else %}
+          <a href="{% url 'stagedoor:login' %}" class="btn btn-secondary btn-block">Sign Up to Subscribe</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -22,13 +22,15 @@
     <div class="grid grid-cols-2 gap-4">
       <div class="form-control">
         <label class="label"><span class="label-text">Latitude</span></label>
-        <input type="number" step="any" name="lat" id="lat-input" value="0.0" placeholder="40.7128"
-               class="input input-bordered w-full">
+        <input type="number" step="any" name="lat" id="lat-input"
+               value="{% if profile %}{{ profile.default_lat }}{% else %}0.0{% endif %}"
+               placeholder="40.7128" class="input input-bordered w-full">
       </div>
       <div class="form-control">
         <label class="label"><span class="label-text">Longitude</span></label>
-        <input type="number" step="any" name="lon" id="lon-input" value="0.0" placeholder="-74.0060"
-               class="input input-bordered w-full">
+        <input type="number" step="any" name="lon" id="lon-input"
+               value="{% if profile %}{{ profile.default_lon }}{% else %}0.0{% endif %}"
+               placeholder="-74.0060" class="input input-bordered w-full">
       </div>
     </div>
 
@@ -57,25 +59,25 @@
       <div class="form-control">
         <label class="label"><span class="label-text">House System</span></label>
         <select name="house_system" class="select select-bordered w-full">
-          <option value="whole_sign" selected>Whole Sign</option>
-          <option value="equal">Equal</option>
-          <option value="porphyry">Porphyry</option>
-          <option value="placidus">Placidus</option>
+          <option value="whole_sign" {% if profile and profile.default_house_system == 'whole_sign' %}selected{% endif %}>Whole Sign</option>
+          <option value="equal" {% if profile and profile.default_house_system == 'equal' %}selected{% endif %}>Equal</option>
+          <option value="porphyry" {% if profile and profile.default_house_system == 'porphyry' %}selected{% endif %}>Porphyry</option>
+          <option value="placidus" {% if profile and profile.default_house_system == 'placidus' %}selected{% endif %}>Placidus</option>
         </select>
       </div>
       <div class="form-control">
         <label class="label"><span class="label-text">Spread</span></label>
         <select name="spread" class="select select-bordered w-full">
-          <option value="daily" selected>Daily (1 card)</option>
-          <option value="three_card">Three Card</option>
-          <option value="celtic_cross">Celtic Cross</option>
+          <option value="daily" {% if profile and profile.default_spread == 'daily' %}selected{% endif %}>Daily (1 card)</option>
+          <option value="three_card" {% if profile and profile.default_spread == 'three_card' %}selected{% endif %}>Three Card</option>
+          <option value="celtic_cross" {% if profile and profile.default_spread == 'celtic_cross' %}selected{% endif %}>Celtic Cross</option>
         </select>
       </div>
     </div>
 
     <div class="form-control">
       <label class="label cursor-pointer justify-start gap-4">
-        <input type="checkbox" name="reversed" class="checkbox checkbox-accent">
+        <input type="checkbox" name="reversed" class="checkbox checkbox-accent" {% if profile and profile.reversed_cards %}checked{% endif %}>
         <span class="label-text">Enable reversed cards</span>
       </label>
     </div>

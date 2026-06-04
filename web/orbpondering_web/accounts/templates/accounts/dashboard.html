@@ -1,0 +1,47 @@
+{% extends "frontend/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <h1 class="text-2xl font-bold text-primary mb-2">Your Readings</h1>
+  <p class="text-base-content/70 mb-8">Past 7 days and the week ahead</p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for day in days %}
+    <div class="card bg-base-200 {% if day.is_today %}ring-2 ring-accent{% endif %}">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium {% if day.is_today %}text-accent{% elif day.is_future %}text-base-content/60{% endif %}">
+            {{ day.date|date:"D" }}
+          </span>
+          <span class="text-xs text-base-content/40">{{ day.date|date:"M j" }}</span>
+        </div>
+        <span class="text-xs text-base-content/50">
+          {% if day.is_today %}Today{% elif day.is_future %}{{ day.date|timeuntil }}{% else %}{{ day.date|timesince }} ago{% endif %}
+        </span>
+
+        {% if day.reading %}
+        <div class="mt-2 space-y-1">
+          <p class="text-xs text-accent">{{ day.reading.spread }}</p>
+          {% for card in day.reading.cards|slice:":2" %}
+          <div class="text-sm {% if not day.is_future %}font-medium{% else %}text-base-content/70{% endif %}">
+            {{ card.name }}
+            <span class="text-xs">{% if not card.upright %}↓{% else %}↑{% endif %}</span>
+          </div>
+          {% if day.reading.cards|length > 2 and forloop.first %}
+          <span class="text-xs text-base-content/40">+{{ day.reading.cards|length|add:"-1" }} more</span>
+          {% endif %}
+          {% endfor %}
+          {% if day.reading.from_db %}
+          <span class="text-xs text-success">✓ saved</span>
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-xs text-base-content/40 mt-2">No reading</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
