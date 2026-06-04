@@ -55,8 +55,7 @@ def reading_view(request):
     if request.method == "GET":
         context = {"today": today}
         if request.user.is_authenticated:
-            profile = request.user.orb_profile
-            context["profile"] = profile
+            context["profile"] = request.user.orb_profile.default_profile
         return render(request, "frontend/reading_form.html", context)
 
     # POST — calculate reading
@@ -143,17 +142,18 @@ def reading_view(request):
             date=reading.date,
             defaults={"reading_data": context.get("reading", {})},
         )
-        # Update profile defaults
-        profile = request.user.orb_profile
-        profile.default_lat = lat
-        profile.default_lon = lon
-        try:
-            profile.default_house_system = house_system.value
-        except AttributeError:
-            profile.default_house_system = str(house_system)
-        profile.default_spread = spread
-        profile.reversed_cards = reversed_cards
-        profile.save()
+        # Update the user's default profile
+        default = request.user.orb_profile.default_profile
+        if default:
+            default.lat = lat
+            default.lon = lon
+            try:
+                default.house_system = house_system.value
+            except AttributeError:
+                default.house_system = str(house_system)
+            default.spread = spread
+            default.reversed_cards = reversed_cards
+            default.save()
 
     is_htmx = request.headers.get("HX-Request") == "true"
     template = "_reading_results.html" if is_htmx else "reading_result.html"

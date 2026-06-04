@@ -11,19 +11,6 @@ from orbpondering.draw import tarot_draw_for_date
 from .models import ReadingHistory, SavedProfile
 
 
-def _save_reading_for_user(user, reading):
-    """Store a reading in the user's history."""
-    from orbpondering_web.frontend.views import _build_reading_context
-
-    context = _build_reading_context(reading)
-    data = context.get("reading", {})
-    ReadingHistory.objects.update_or_create(
-        user=user,
-        date=reading.date,
-        defaults={"reading_data": data},
-    )
-
-
 def _reading_to_card_summary(rd):
     """Extract a card summary from a reading dict for template display."""
     positions = rd.get("positions", [])
@@ -50,7 +37,9 @@ def _reading_to_card_summary(rd):
 def dashboard(request):
     """Show past 7 and next 7 days of readings."""
     today = date.today()
-    profile = request.user.orb_profile
+    profile = request.user.orb_profile.default_profile
+    if profile is None:
+        return redirect("accounts-settings")
 
     # Past 7 days — from DB
     past_start = today - timedelta(days=7)
@@ -59,8 +48,8 @@ def dashboard(request):
         for rh in ReadingHistory.objects.filter(user=request.user, date__gte=past_start)
     }
 
-    # Future 7 days — pre-compute from saved prefs
-    future_dates = [today + timedelta(days=i) for i in range(8)]  # today + next 7
+    # Future 8 days (today + next 7)
+    future_dates = [today + timedelta(days=i) for i in range(8)]
 
     days = []
     for d in future_dates:
@@ -69,15 +58,14 @@ def dashboard(request):
             summary = _reading_to_card_summary(reading_data)
             summary["from_db"] = True
         else:
-            # Pre-compute
             try:
-                house = HouseSystem(profile.default_house_system)
+                house = HouseSystem(profile.house_system)
                 reading = tarot_draw_for_date(
                     d=d,
-                    lat=profile.default_lat,
-                    lon=profile.default_lon,
+                    lat=profile.lat,
+                    lon=profile.lon,
                     house_system=house,
-                    spread_name=profile.default_spread,
+                    spread_name=profile.spread,
                     reversed_cards=profile.reversed_cards,
                 )
                 from orbpondering_web.frontend.views import _build_reading_context
@@ -99,26 +87,30 @@ def dashboard(request):
     return render(
         request,
         "accounts/dashboard.html",
-        {"days": days, "profile": profile},
+        {"days": days},
     )
 
 
 @login_required
 def settings_view(request):
-    """View and update user preferences."""
-    profile = request.user.orb_profile
+    """View and update the user's default SavedProfile."""
+    profile = request.user.orb_profile.default_profile
+    if profile is None:
+        profile = SavedProfile.objects.create(
+            user=request.user, name="Default", is_default=True
+        )
 
     if request.method == "POST":
         try:
-            profile.default_lat = float(request.POST.get("lat", "0.0"))
+            profile.lat = float(request.POST.get("lat", "0.0"))
         except ValueError:
             pass
         try:
-            profile.default_lon = float(request.POST.get("lon", "0.0"))
+            profile.lon = float(request.POST.get("lon", "0.0"))
         except ValueError:
             pass
-        profile.default_house_system = request.POST.get("house_system", "whole_sign")
-        profile.default_spread = request.POST.get("spread", "daily")
+        profile.house_system = request.POST.get("house_system", "whole_sign")
+        profile.spread = request.POST.get("spread", "daily")
         profile.reversed_cards = request.POST.get("reversed") == "on"
         profile.save()
         return redirect("accounts-settings")
@@ -126,24 +118,22 @@ def settings_view(request):
     return render(
         request,
         "accounts/settings.html",
-        {"profile": profile},
+        {"profile": profile, "max_profiles": request.user.orb_profile.max_profiles},
     )
 
 
 @login_required
 def profiles_view(request):
-    """List and manage saved profiles (Orb subscribers only)."""
-    profile = request.user.orb_profile
-    is_orb = profile.subscription_status == "active"
-
-    if not is_orb:
-        return render(request, "accounts/pricing.html", {"must_upgrade": True})
+    """List and manage saved profiles (Orb for additional ones)."""
+    orb_profile = request.user.orb_profile
+    is_orb = orb_profile.subscription_status == "active"
+    max_profiles = orb_profile.max_profiles
 
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
             name = request.POST.get("name", "").strip()
-            if name and request.user.saved_profiles.count() < 10:
+            if name and request.user.saved_profiles.count() < max_profiles:
                 try:
                     lat = float(request.POST.get("lat", "0.0"))
                 except ValueError:
@@ -163,15 +153,26 @@ def profiles_view(request):
                 )
         elif action == "delete":
             SavedProfile.objects.filter(
-                id=request.POST.get("id"), user=request.user
+                id=request.POST.get("id"), user=request.user, is_default=False
             ).delete()
+        elif action == "set_default":
+            SavedProfile.objects.filter(user=request.user).update(is_default=False)
+            SavedProfile.objects.filter(
+                id=request.POST.get("id"), user=request.user
+            ).update(is_default=True)
         return redirect("accounts-profiles")
 
     saved = request.user.saved_profiles.all()
+    count = saved.count()
     return render(
         request,
         "accounts/profiles.html",
-        {"profiles": saved, "profile_count": saved.count(), "max_profiles": 10},
+        {
+            "profiles": saved,
+            "profile_count": count,
+            "max_profiles": max_profiles,
+            "is_orb": is_orb,
+        },
     )
 
 

@@ -5,7 +5,7 @@ from django.db import models
 
 
 class UserProfile(models.Model):
-    """Preferences and subscription status for a user."""
+    """Subscription and billing metadata for a user."""
 
     SUBSCRIPTION_CHOICES = [
         ("free", "Free"),
@@ -17,11 +17,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orb_profile"
     )
-    default_lat = models.FloatField(default=0.0)
-    default_lon = models.FloatField(default=0.0)
-    default_house_system = models.CharField(max_length=20, default="whole_sign")
-    default_spread = models.CharField(max_length=20, default="daily")
-    reversed_cards = models.BooleanField(default=False)
     subscription_status = models.CharField(
         max_length=20, choices=SUBSCRIPTION_CHOICES, default="free"
     )
@@ -37,19 +32,29 @@ class UserProfile(models.Model):
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
 
+    @property
+    def default_profile(self):
+        """The user's primary SavedProfile."""
+        return self.user.saved_profiles.filter(is_default=True).first()
+
+    @property
+    def max_profiles(self):
+        return 10 if self.subscription_status == "active" else 1
+
 
 class SavedProfile(models.Model):
-    """Named location profiles for Orb subscribers."""
+    """A named location profile. Free users get 1, Orb users get up to 10."""
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_profiles"
     )
     name = models.CharField(max_length=100)
-    lat = models.FloatField()
-    lon = models.FloatField()
+    lat = models.FloatField(default=0.0)
+    lon = models.FloatField(default=0.0)
     house_system = models.CharField(max_length=20, default="whole_sign")
     spread = models.CharField(max_length=20, default="daily")
     reversed_cards = models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -58,7 +63,7 @@ class SavedProfile(models.Model):
     class Meta:
         verbose_name = "Saved Profile"
         verbose_name_plural = "Saved Profiles"
-        ordering = ["created_at"]
+        ordering = ["-is_default", "created_at"]
 
 
 class ReadingHistory(models.Model):
