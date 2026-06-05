@@ -19,6 +19,7 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
@@ -29,6 +30,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "anymail",
     "stagedoor",
+    "orbpondering_web.accounts",
     "orbpondering_web.api",
     "orbpondering_web.frontend",
 ]
@@ -75,7 +77,9 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 STAGEDOOR_SITE_NAME = "Orbpondering"
-STAGEDOOR_DISABLE_USER_CREATION = True
+STAGEDOOR_DISABLE_USER_CREATION = False
+
+ORB_PRICE_CENTS = 499
 STAGEDOOR_LOGIN_REDIRECT = "/"
 STAGEDOOR_LOGOUT_REDIRECT = "/"
 
