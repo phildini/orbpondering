@@ -49,7 +49,36 @@
             </select>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm">Save Profile</button>
+        <details class="collapse collapse-arrow bg-base-300 mt-2">
+          <summary class="collapse-title text-xs font-medium text-accent">Natal Chart (optional)</summary>
+          <div class="collapse-content space-y-2 pt-2">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Birth Date</span></label>
+                <input type="date" name="birth_date" class="input input-bordered input-sm w-full">
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Birth Time</span></label>
+                <input type="time" name="birth_time" class="input input-bordered input-sm w-full">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Birth Lat</span></label>
+                <input type="number" step="any" name="birth_lat" value="0.0" class="input input-bordered input-sm w-full">
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Birth Lon</span></label>
+                <input type="number" step="any" name="birth_lon" value="0.0" class="input input-bordered input-sm w-full">
+              </div>
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text text-xs">Time Zone</span></label>
+              <input type="text" name="birth_tz" placeholder="America/New_York" class="input input-bordered input-sm w-full">
+            </div>
+          </div>
+        </details>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Save Profile</button>
       </form>
     </div>
   </details>

@@ -47,6 +47,36 @@
       </label>
     </div>
 
+    <details class="collapse collapse-arrow bg-base-300">
+      <summary class="collapse-title text-sm font-medium text-accent">Natal Chart (optional)</summary>
+      <div class="collapse-content space-y-3 pt-3">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Birth Date</span></label>
+            <input type="date" name="birth_date" value="{% if profile.birth_date %}{{ profile.birth_date|date:'Y-m-d' }}{% endif %}" class="input input-bordered w-full">
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Birth Time</span></label>
+            <input type="time" name="birth_time" value="{% if profile.birth_time %}{{ profile.birth_time|time:'H:i' }}{% endif %}" class="input input-bordered w-full">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Birth Latitude</span></label>
+            <input type="number" step="any" name="birth_lat" value="{{ profile.birth_lat }}" class="input input-bordered w-full">
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Birth Longitude</span></label>
+            <input type="number" step="any" name="birth_lon" value="{{ profile.birth_lon }}" class="input input-bordered w-full">
+          </div>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Time Zone</span></label>
+          <input type="text" name="birth_tz" value="{{ profile.birth_tz }}" placeholder="America/New_York" class="input input-bordered w-full">
+        </div>
+      </div>
+    </details>
+
     <button type="submit" class="btn btn-primary btn-block">Save Settings</button>
   </form>
 </div>

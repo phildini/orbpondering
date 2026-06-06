@@ -54,6 +54,12 @@ class SavedProfile(models.Model):
     house_system = models.CharField(max_length=20, default="whole_sign")
     spread = models.CharField(max_length=20, default="daily")
     reversed_cards = models.BooleanField(default=False)
+    # Natal chart data
+    birth_date = models.DateField(null=True, blank=True)
+    birth_time = models.TimeField(null=True, blank=True)
+    birth_lat = models.FloatField(default=0.0)
+    birth_lon = models.FloatField(default=0.0)
+    birth_tz = models.CharField(max_length=100, blank=True)
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

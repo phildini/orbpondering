@@ -112,6 +112,34 @@ def settings_view(request):
         profile.house_system = request.POST.get("house_system", "whole_sign")
         profile.spread = request.POST.get("spread", "daily")
         profile.reversed_cards = request.POST.get("reversed") == "on"
+        # Natal fields
+        bd = request.POST.get("birth_date", "").strip()
+        if bd:
+            from datetime import datetime
+            try:
+                profile.birth_date = datetime.strptime(bd, "%Y-%m-%d").date()
+            except ValueError:
+                pass
+        else:
+            profile.birth_date = None
+        bt = request.POST.get("birth_time", "").strip()
+        if bt:
+            from datetime import datetime
+            try:
+                profile.birth_time = datetime.strptime(bt, "%H:%M").time()
+            except ValueError:
+                pass
+        else:
+            profile.birth_time = None
+        try:
+            profile.birth_lat = float(request.POST.get("birth_lat", "0.0"))
+        except ValueError:
+            pass
+        try:
+            profile.birth_lon = float(request.POST.get("birth_lon", "0.0"))
+        except ValueError:
+            pass
+        profile.birth_tz = request.POST.get("birth_tz", "")
         profile.save()
         return redirect("accounts-settings")
 
@@ -142,6 +170,30 @@ def profiles_view(request):
                     lon = float(request.POST.get("lon", "0.0"))
                 except ValueError:
                     lon = 0.0
+                bd = request.POST.get("birth_date", "").strip()
+                birth_date = None
+                if bd:
+                    from datetime import datetime
+                    try:
+                        birth_date = datetime.strptime(bd, "%Y-%m-%d").date()
+                    except ValueError:
+                        pass
+                bt = request.POST.get("birth_time", "").strip()
+                birth_time = None
+                if bt:
+                    from datetime import datetime
+                    try:
+                        birth_time = datetime.strptime(bt, "%H:%M").time()
+                    except ValueError:
+                        pass
+                try:
+                    birth_lat = float(request.POST.get("birth_lat", "0.0"))
+                except ValueError:
+                    birth_lat = 0.0
+                try:
+                    birth_lon = float(request.POST.get("birth_lon", "0.0"))
+                except ValueError:
+                    birth_lon = 0.0
                 SavedProfile.objects.create(
                     user=request.user,
                     name=name,
@@ -150,6 +202,11 @@ def profiles_view(request):
                     house_system=request.POST.get("house_system", "whole_sign"),
                     spread=request.POST.get("spread", "daily"),
                     reversed_cards=request.POST.get("reversed") == "on",
+                    birth_date=birth_date,
+                    birth_time=birth_time,
+                    birth_lat=birth_lat,
+                    birth_lon=birth_lon,
+                    birth_tz=request.POST.get("birth_tz", ""),
                 )
         elif action == "delete":
             SavedProfile.objects.filter(
