@@ -1,0 +1,28 @@
+{% extends "frontend/base.html" %}
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="card bg-base-200 p-8 text-center">
+    <h1 class="text-2xl font-bold text-primary mb-2">Sign In</h1>
+    <p class="text-base-content/70 mb-6">Enter your email to receive a login code.</p>
+
+    {% for message in messages %}
+    <div class="alert alert-info shadow-lg mb-4 text-sm">{{ message }}</div>
+    {% endfor %}
+
+    <form action="{% url 'stagedoor:login' %}" method="post" class="space-y-4">
+      {% csrf_token %}
+      <div class="form-control">
+        <input type="email" name="email" placeholder="you@example.com" required
+               class="input input-bordered w-full text-center text-lg">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Send Login Code</button>
+    </form>
+
+    <p class="text-xs text-base-content/40 mt-6">
+      A one-time code will be emailed to you. No password needed.
+    </p>
+  </div>
+</div>
+{% endblock %}

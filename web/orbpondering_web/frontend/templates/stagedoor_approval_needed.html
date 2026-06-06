@@ -1,0 +1,20 @@
+{% extends "frontend/base.html" %}
+{% block title %}Approval Needed{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="card bg-base-200 p-8 text-center">
+    <h1 class="text-2xl font-bold text-primary mb-2">Thanks for signing up!</h1>
+
+    {% for message in messages %}
+    <div class="alert alert-info shadow-lg mb-4 text-sm">{{ message }}</div>
+    {% endfor %}
+
+    <p class="text-base-content/70">
+      Right now, we're reviewing all accounts before allowing log in.
+      If your account is approved, you'll receive an email with a login link.
+      Thanks for your patience!
+    </p>
+  </div>
+</div>
+{% endblock %}

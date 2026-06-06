@@ -29,10 +29,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "anymail",
-    "stagedoor",
     "orbpondering_web.accounts",
     "orbpondering_web.api",
     "orbpondering_web.frontend",
+    "stagedoor",
 ]
 
 MIDDLEWARE = [
