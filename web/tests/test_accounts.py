@@ -2,7 +2,6 @@
 
 import pytest
 
-
 # ---- Model tests ----
 
 class TestUserProfileSignal:
@@ -34,6 +33,7 @@ class TestUserProfileSignal:
 class TestUserProfile:
     def test_str(self, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import UserProfile
 
         User = get_user_model()
@@ -70,6 +70,7 @@ class TestUserProfile:
 class TestSavedProfile:
     def test_create_additional_profile(self, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()
@@ -86,6 +87,7 @@ class TestSavedProfile:
 class TestReadingHistory:
     def test_create_reading_history(self, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import ReadingHistory
 
         User = get_user_model()
@@ -96,12 +98,13 @@ class TestReadingHistory:
             reading_data={"seed": 123, "spread": {"name": "Test"}},
         )
         assert rh.reading_data["seed"] == 123
-        assert str(rh) == f"test@example.com — 2026-06-01"
+        assert str(rh) == "test@example.com — 2026-06-01"
 
     def test_unique_per_user_per_date(self, db):
         from django.contrib.auth import get_user_model
-        from orbpondering_web.accounts.models import ReadingHistory
         from django.db import IntegrityError
+
+        from orbpondering_web.accounts.models import ReadingHistory
 
         User = get_user_model()
         user = User.objects.create_user(username="testuser", email="test@example.com")
@@ -206,6 +209,7 @@ class TestProfilesView:
 
     def test_can_create_profile(self, client, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()
@@ -222,6 +226,7 @@ class TestProfilesView:
     def test_free_user_cannot_create_second_profile(self, client, db):
         """Free users have max_profiles=1, so creating a second should fail."""
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()
@@ -236,6 +241,7 @@ class TestProfilesView:
 
     def test_orb_user_can_create_multiple_profiles(self, client, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()
@@ -251,6 +257,7 @@ class TestProfilesView:
 
     def test_delete_non_default_profile(self, client, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()
@@ -271,6 +278,7 @@ class TestProfilesView:
 
     def test_cannot_delete_default_profile(self, client, db):
         from django.contrib.auth import get_user_model
+
         from orbpondering_web.accounts.models import SavedProfile
 
         User = get_user_model()

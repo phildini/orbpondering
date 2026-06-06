@@ -11,5 +11,9 @@ fi
 # Run database migrations
 uv run python manage.py migrate --noinput
 
-# Start gunicorn
-exec uv run gunicorn orbpondering_web.wsgi --bind 0.0.0.0:8080
+# Start gunicorn with access logs to stdout
+exec uv run gunicorn orbpondering_web.wsgi \
+    --bind 0.0.0.0:8080 \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level info

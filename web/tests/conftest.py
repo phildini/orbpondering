@@ -1,7 +1,8 @@
 """Test configuration for Django web app tests."""
 
-import django
 import os
+
+import django
 
 
 def pytest_configure():
