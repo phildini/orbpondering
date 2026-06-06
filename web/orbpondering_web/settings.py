@@ -11,6 +11,13 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://orbpondering.fly.dev",
+    "https://orbponder.ing",
+    "http://localhost:8000",
+    "http://localhost:8099",
+]
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
