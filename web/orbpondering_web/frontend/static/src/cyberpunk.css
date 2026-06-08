@@ -1,0 +1,199 @@
+/* Cyberpunk aesthetic overrides for Orbpondering */
+/* Load this AFTER Tailwind/DaisyUI output.css */
+
+/* ===== CRT Grid Background ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.025) 0px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+/* ===== Scan Line Overlay ===== */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* ===== Glass Morphism Cards ===== */
+.card {
+  background: rgba(43, 33, 58, 0.75) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  border-color: rgba(54, 245, 246, 0.25);
+  box-shadow:
+    0 0 16px rgba(54, 245, 246, 0.10),
+    0 0 4px rgba(54, 245, 246, 0.05);
+}
+
+/* Override for cards inside collapsed sections — no hover glow there */
+.collapse .card:hover {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(43, 33, 58, 0.85) !important;
+}
+
+/* ===== Dropdown menu ===== */
+.dropdown-content {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(43, 33, 58, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Button Glow on Hover ===== */
+.btn-primary:hover {
+  box-shadow:
+    0 0 14px rgba(231, 121, 193, 0.35),
+    0 0 4px rgba(231, 121, 193, 0.15);
+}
+
+.btn-secondary:hover {
+  box-shadow:
+    0 0 14px rgba(246, 1, 157, 0.35),
+    0 0 4px rgba(246, 1, 157, 0.15);
+}
+
+.btn-accent:hover {
+  box-shadow:
+    0 0 14px rgba(54, 245, 246, 0.35),
+    0 0 4px rgba(54, 245, 246, 0.15);
+}
+
+.btn-error:hover {
+  box-shadow:
+    0 0 14px rgba(231, 76, 60, 0.35),
+    0 0 4px rgba(231, 76, 60, 0.15);
+}
+
+.btn-success:hover {
+  box-shadow:
+    0 0 14px rgba(39, 174, 96, 0.35),
+    0 0 4px rgba(39, 174, 96, 0.15);
+}
+
+.btn-warning:hover {
+  box-shadow:
+    0 0 14px rgba(243, 156, 18, 0.35),
+    0 0 4px rgba(243, 156, 18, 0.15);
+}
+
+.btn-info:hover {
+  box-shadow:
+    0 0 14px rgba(52, 152, 219, 0.35),
+    0 0 4px rgba(52, 152, 219, 0.15);
+}
+
+/* Ghost buttons (btn-ghost) — subtle glow only */
+.btn-ghost:hover {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.06);
+}
+
+/* ===== Badge Styling ===== */
+.badge {
+  border: 1px solid currentColor;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+/* ===== Table Row Hover ===== */
+table.table-zebra tbody tr:hover {
+  background: rgba(54, 245, 246, 0.04) !important;
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 26, 46, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 245, 246, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 245, 246, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(54, 245, 246, 0.3) rgba(26, 26, 46, 0.5);
+}
+
+/* ===== Input / Select / Textarea Glow on Focus ===== */
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: rgba(54, 245, 246, 0.5) !important;
+  box-shadow:
+    0 0 0 1px rgba(54, 245, 246, 0.15),
+    0 0 10px rgba(54, 245, 246, 0.08) !important;
+  outline: none;
+}
+
+/* ===== Details / Collapse Styling ===== */
+details.collapse {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.25s ease;
+}
+
+details.collapse:hover {
+  border-color: rgba(54, 245, 246, 0.15);
+}
+
+/* ===== Link Hover ===== */
+.link-accent:hover {
+  text-shadow: 0 0 8px rgba(54, 245, 246, 0.4);
+}
+
+/* ===== Alert / Notification Styling ===== */
+.alert {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Hero Section (Landing page) ===== */
+.hero {
+  background: transparent;
+}
