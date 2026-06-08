@@ -1,6 +1,35 @@
 /* Cyberpunk aesthetic overrides for Orbpondering */
 /* Load this AFTER Tailwind/DaisyUI output.css */
 
+/* ===== Fonts ===== */
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.font-heading,
+.btn,
+.badge {
+  font-family: 'Audiowide', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+body,
+input,
+select,
+textarea,
+.table,
+.label-text,
+.label-text-alt {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+code, pre, kbd {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Slightly larger body text for readability at small sizes */
+body {
+  font-size: 1.05rem;
+}
+
 /* ===== CRT Grid Background ===== */
 body::before {
   content: '';
