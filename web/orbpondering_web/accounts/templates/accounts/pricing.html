@@ -12,6 +12,16 @@
   </div>
   {% endif %}
 
+  {% if request.GET.success %}
+  <div class="alert alert-success shadow-lg mb-8">
+    <span>Subscription activated! Welcome to Orb.</span>
+  </div>
+  {% elif request.GET.canceled %}
+  <div class="alert alert-warning shadow-lg mb-8">
+    <span>Checkout canceled. You're still on the Free plan.</span>
+  </div>
+  {% endif %}
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
 
     <!-- Free -->
@@ -34,7 +44,7 @@
         </div>
         {% else %}
         <div class="card-actions mt-6">
-          <a href="{% url 'stagedoor:login' %}" class="btn btn-accent btn-block">Sign Up Free</a>
+          <a href="{% url 'stagedoor:token-post' %}" class="btn btn-accent btn-block">Sign Up Free</a>
         </div>
         {% endif %}
       </div>
@@ -61,7 +71,7 @@
             <form method="post" action="{% url 'accounts-subscribe' %}" class="w-full">
               {% csrf_token %}
               <input type="hidden" name="action" value="unsubscribe">
-              <button type="submit" class="btn btn-outline btn-block">Cancel Subscription</button>
+              <button type="submit" class="btn btn-outline btn-block">Manage Billing</button>
             </form>
             {% else %}
             <form method="post" action="{% url 'accounts-subscribe' %}" class="w-full">
@@ -69,7 +79,9 @@
               <input type="hidden" name="action" value="subscribe">
               <button type="submit" class="btn btn-secondary btn-block">Subscribe — ${{ price_dollars|floatformat:0 }}/mo</button>
             </form>
+            {% if not has_stripe %}
             <p class="text-xs text-base-content/40 text-center mt-2">Mock mode — no payment collected</p>
+            {% endif %}
             {% endif %}
           {% else %}
           <a href="{% url 'stagedoor:token-post' %}" class="btn btn-secondary btn-block">Sign Up to Subscribe</a>

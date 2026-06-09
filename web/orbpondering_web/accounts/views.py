@@ -235,17 +235,27 @@ def profiles_view(request):
 
 @login_required
 def subscribe_view(request):
-    """Mock subscription toggle for development."""
-    profile = request.user.orb_profile
+    """Redirect to Stripe Checkout or billing portal."""
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "subscribe":
+            if settings.STRIPE_SECRET_KEY:
+                from .stripe_integration import create_checkout_session
+                return create_checkout_session(request)
+            # Fallback to mock for development
+            profile = request.user.orb_profile
             profile.subscription_status = "active"
             profile.save()
+            return redirect("accounts-pricing")
         elif action == "unsubscribe":
+            if settings.STRIPE_SECRET_KEY and request.user.orb_profile.stripe_customer_id:
+                from .stripe_integration import billing_portal
+                return billing_portal(request)
+            # Fallback to mock for development
+            profile = request.user.orb_profile
             profile.subscription_status = "free"
             profile.save()
-        return redirect("accounts-pricing")
+            return redirect("accounts-pricing")
     return redirect("accounts-pricing")
 
 
@@ -255,6 +265,7 @@ def pricing_view(request):
     if request.user.is_authenticated:
         is_orb = request.user.orb_profile.subscription_status == "active"
     price = getattr(settings, "ORB_PRICE_CENTS", 499)
+    has_stripe = bool(settings.STRIPE_SECRET_KEY and settings.STRIPE_ORB_PRICE_ID)
     return render(
         request,
         "accounts/pricing.html",
@@ -262,5 +273,6 @@ def pricing_view(request):
             "is_orb": is_orb,
             "price_dollars": price / 100,
             "must_upgrade": request.GET.get("upgrade") == "1",
+            "has_stripe": has_stripe,
         },
     )
