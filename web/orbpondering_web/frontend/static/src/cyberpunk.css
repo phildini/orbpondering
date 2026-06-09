@@ -2,22 +2,15 @@
 /* Load this AFTER Tailwind/DaisyUI output.css */
 
 /* ===== Fonts ===== */
-h1, h2, h3, h4, h5, h6,
-.card-title,
-.font-heading,
-.btn,
-.badge {
+h1, h2, .card-title {
   font-family: 'Audiowide', sans-serif;
   letter-spacing: 0.02em;
 }
 
-body,
-input,
-select,
-textarea,
-.table,
-.label-text,
-.label-text-alt {
+body, h3, h4, h5, h6,
+.btn, .badge, .font-heading,
+input, select, textarea,
+.table, .label-text, .label-text-alt {
   font-family: 'Share Tech Mono', monospace;
 }
 
