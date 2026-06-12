@@ -245,3 +245,38 @@ details.collapse:hover {
 .hero {
   background: transparent;
 }
+
+/* ===== Card Draw Animation ===== */
+@keyframes card-draw {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#reading-content .grid > .card {
+  animation: card-draw 0.35s ease-out both;
+}
+
+#reading-content .grid > .card:nth-child(1)  { animation-delay: 0.00s; }
+#reading-content .grid > .card:nth-child(2)  { animation-delay: 0.06s; }
+#reading-content .grid > .card:nth-child(3)  { animation-delay: 0.12s; }
+#reading-content .grid > .card:nth-child(4)  { animation-delay: 0.18s; }
+#reading-content .grid > .card:nth-child(5)  { animation-delay: 0.24s; }
+#reading-content .grid > .card:nth-child(6)  { animation-delay: 0.30s; }
+#reading-content .grid > .card:nth-child(7)  { animation-delay: 0.36s; }
+#reading-content .grid > .card:nth-child(8)  { animation-delay: 0.42s; }
+#reading-content .grid > .card:nth-child(9)  { animation-delay: 0.48s; }
+#reading-content .grid > .card:nth-child(10) { animation-delay: 0.54s; }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  #reading-content .grid > .card {
+    animation: none;
+    opacity: 1;
+  }
+}
